@@ -19,6 +19,7 @@ class OrdersModule extends \yii\base\Module
     {
         parent::init();
 
-        // custom initialization code goes here
+        // У модуля свой собственный лэйоут.
+        $this->layout = 'orders-layout';
     }
 }

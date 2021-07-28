@@ -2,6 +2,7 @@
 
 namespace app\modules\orders\controllers;
 
+use Yii;
 use yii\web\Controller;
 
 /**
@@ -16,5 +17,13 @@ class DefaultController extends Controller
     public function actionIndex()
     {
         return $this->render('index');
+    }
+
+    /**
+     * Редирект на главную / предыдущую страницу модуля при ошибке запроса.
+     * @return \yii\web\Response
+     */
+    public function actionError() {
+        return $this->redirect(Yii::$app->homeUrl);
     }
 }
