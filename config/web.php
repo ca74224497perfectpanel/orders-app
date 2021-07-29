@@ -8,6 +8,7 @@ $config = [
     'basePath' => dirname(__DIR__),
     'homeUrl' => '/',
     'defaultRoute' => 'orders/default/index',
+    'language' => 'en',
     'bootstrap' => ['log'],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
@@ -43,9 +44,20 @@ $config = [
         ],
         'db' => $db,
         'urlManager' => [
+            'class' => 'codemix\localeurls\UrlManager',
+            'languages' => ['ru', 'en'],
+            'enableDefaultLanguageUrlCode' => true,
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [],
+        ],
+        'i18n' => [
+            'translations' => [
+                'text*' => [
+                    'class' => 'yii\i18n\PhpMessageSource',
+                    'basePath' => '@app/modules/orders/messages',
+                ],
+            ],
         ],
     ],
     'params' => $params,
