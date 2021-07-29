@@ -6,8 +6,7 @@ $db = require __DIR__ . '/db.php';
 $config = [
     'id' => 'Application',
     'basePath' => dirname(__DIR__),
-    'homeUrl' => '/',
-    'defaultRoute' => 'orders/default/index',
+    'defaultRoute' => '/',
     'language' => 'en',
     'bootstrap' => ['log'],
     'aliases' => [
@@ -17,7 +16,7 @@ $config = [
     'components' => [
         'request' => [
             'cookieValidationKey' => '3ZM6-bt7E55BXohMzmFbjbbN5IrawCIb',
-            'baseUrl' => '/'
+            'baseUrl' => ''
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -49,7 +48,9 @@ $config = [
             'enableDefaultLanguageUrlCode' => true,
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'rules' => [],
+            'rules' => [
+                '/' => 'orders/default/index'
+            ],
         ],
         'i18n' => [
             'translations' => [

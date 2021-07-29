@@ -2952,3 +2952,13 @@ input[type="checkbox"].selectOrder{
   min-width: 30px;
   display: inline-block;
 }
+
+.grid-view {
+  position: relative;
+}
+
+.grid-view .summary {
+  position: absolute;
+  bottom: 30px;
+  right: 0;
+}

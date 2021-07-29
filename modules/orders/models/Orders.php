@@ -2,7 +2,7 @@
 
 namespace app\modules\orders\models;
 
-use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "orders".
@@ -16,12 +16,31 @@ use Yii;
  * @property int $created_at
  * @property int $mode 0 - Manual, 1 - Auto
  */
-class Orders extends \yii\db\ActiveRecord
+class Orders extends ActiveRecord
 {
+    /**
+     * Список статусов заказа.
+     */
+    const ORDER_STATUSES = [
+        0 => 'Pending',
+        1 => 'In progress',
+        2 => 'Completed',
+        3 => 'Canceled',
+        4 => 'Fail'
+    ];
+
+    /**
+     * Список режимов.
+     */
+    const MODE_STATUSES = [
+        0 => 'Manual',
+        1 => 'Auto'
+    ];
+
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'orders';
     }
@@ -29,7 +48,7 @@ class Orders extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['user_id', 'link', 'quantity', 'service_id', 'status', 'created_at', 'mode'], 'required'],
@@ -41,16 +60,16 @@ class Orders extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
-            'user_id' => 'User ID',
+            'user_id' => 'User',
             'link' => 'Link',
             'quantity' => 'Quantity',
-            'service_id' => 'Service ID',
+            'service_id' => 'Service',
             'status' => 'Status',
-            'created_at' => 'Created At',
+            'created_at' => 'Created',
             'mode' => 'Mode',
         ];
     }
@@ -59,7 +78,7 @@ class Orders extends \yii\db\ActiveRecord
      * {@inheritdoc}
      * @return OrdersQuery the active query used by this AR class.
      */
-    public static function find()
+    public static function find(): OrdersQuery
     {
         return new OrdersQuery(get_called_class());
     }
