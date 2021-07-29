@@ -1,6 +1,7 @@
 <?php
 
 use app\modules\orders\models\Orders;
+use app\widgets\GridControl;
 use yii\grid\GridView;
 use yii\data\ActiveDataProvider;
 
@@ -29,31 +30,10 @@ $dataProvider = new ActiveDataProvider([
     </div>
 </nav>
 <div class="container-fluid">
-    <ul class="nav nav-tabs p-b">
-        <li class="active"><a href="#">All orders</a></li>
-        <li><a href="#">Pending</a></li>
-        <li><a href="#">In progress</a></li>
-        <li><a href="#">Completed</a></li>
-        <li><a href="#">Canceled</a></li>
-        <li><a href="#">Error</a></li>
-        <li class="pull-right custom-search">
-            <form class="form-inline" action="/admin/orders" method="get">
-                <div class="input-group">
-                    <input type="text" name="search" class="form-control" value="" placeholder="Search orders">
-                    <span class="input-group-btn search-select-wrap">
-                        <select class="form-control search-select" name="search-type">
-                            <option value="1" selected="">Order ID</option>
-                            <option value="2">Link</option>
-                            <option value="3">Username</option>
-                        </select>
-                        <button type="submit" class="btn btn-default">
-                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                        </button>
-                    </span>
-                </div>
-            </form>
-        </li>
-    </ul>
+    <!--Фильтр статуса и поиск-->
+    <?= GridControl::widget(); ?>
+
+    <!--Таблица с данными-->
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'summary' => '{begin} to {end} of {totalCount}',
