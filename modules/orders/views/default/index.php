@@ -1,30 +1,51 @@
 <?php
 
-use app\modules\orders\models\Orders;
-use app\widgets\GridControl;
-use yii\grid\GridView;
-use yii\data\ActiveDataProvider;
+/* @var $dataProvider ActiveDataProvider */
 
-$dataProvider = new ActiveDataProvider([
-    'query' => Orders::find(),
-    'pagination' => [
-        'pageSize' => 100
+use yii\grid\GridView;
+use app\widgets\GridControl;
+use yii\helpers\Html;
+use yii\helpers\Url;
+use yii2tech\csvgrid\CsvGrid;
+use app\modules\orders\models\Orders;
+
+// Описание столбцов таблицы.
+$columns = [
+    'id', 'user_id', 'link', 'quantity', 'service_id',
+    [
+        'attribute' => 'status',
+        'value' => function ($item) {
+            return Orders::ORDER_STATUSES[$item->status];
+        }
+    ],
+    [
+        'attribute' => 'mode',
+        'value' => function ($item) {
+            return Orders::MODE_STATUSES[$item->mode];
+        }
+    ],
+    [
+        'attribute' => 'created_at',
+        'format' => ['date', 'php:Y-m-d H:i:s']
     ]
-]);
+];
+
+/* Отдаем CSV-файл по запросу */
+if (Yii::$app->request->get('get-csv')) {
+    $exporter = new CsvGrid([
+        'dataProvider' => $dataProvider,
+        'columns' => $columns]
+    );
+    $exporter->export()->send('orders.csv');
+}
 ?>
 <nav class="navbar navbar-fixed-top navbar-default">
     <div class="container-fluid">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-        </div>
         <div class="collapse navbar-collapse" id="bs-navbar-collapse">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Orders</a></li>
+                <li class="active">
+                    <a href="<?= Url::current(); ?>">Orders</a>
+                </li>
             </ul>
         </div>
     </div>
@@ -37,28 +58,13 @@ $dataProvider = new ActiveDataProvider([
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'summary' => '{begin} to {end} of {totalCount}',
-        'columns' => [
-            'id',
-            'user_id',
-            'link',
-            'quantity',
-            'service_id',
-            [
-                'attribute' => 'status',
-                'value' => function ($item) {
-                    return Orders::ORDER_STATUSES[$item->status];
-                }
-            ],
-            [
-                'attribute' => 'mode',
-                'value' => function ($item) {
-                    return Orders::MODE_STATUSES[$item->mode];
-                }
-            ],
-            [
-                'attribute' => 'created_at',
-                'format' => ['date', 'php:Y-m-d H:i:s']
-            ]
-        ]
+        'columns' => $columns
      ]); ?>
+
+    <!--Ссылка на скачивание CSV-файла заказов-->
+    <?= Html::a(
+        'Download CSV-File →',
+        Url::current(['get-csv' => 'true']),
+        ['target' => '_blank']
+    ); ?>
 </div>

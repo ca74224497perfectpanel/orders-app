@@ -2,6 +2,7 @@
 body {
   padding-top: 65px;
   padding-bottom: 30px;
+  margin-bottom: 100px;
 }
 
 .table > thead > tr > th {

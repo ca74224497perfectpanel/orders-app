@@ -3,7 +3,9 @@
 namespace app\widgets;
 
 use app\modules\orders\models\Orders;
+use Yii;
 use yii\base\Widget;
+use yii\helpers\Url;
 
 class GridControl extends Widget
 {
@@ -21,13 +23,19 @@ class GridControl extends Widget
     public function run(): string
     {
         $html = '';
+        $domain = Url::canonical();
+        $status = Yii::$app->request->get('order-status');
+
         foreach ($this->orderStatuses as $key => $label) {
-            $html .= "<li><a href='/?order-status=$key'>$label</a></li>";
+            $active = isset($status) && (int)$status === $key ? 'class="active"' : '';
+            $html .= "<li $active><a href='$domain/?order-status=$key'>$label</a></li>";
         }
 
         return '
          <ul class="nav nav-tabs p-b">
-            <li class="active"><a href="#">All orders</a></li>' . $html . '
+            <li ' . (isset($status) ? '' : 'class="active"') . '>
+                <a href="' . $domain . '">All orders</a>
+            </li>' . $html . '
             <li class="pull-right custom-search">
                 <form class="form-inline" action="#" method="get">
                     <div class="input-group">
