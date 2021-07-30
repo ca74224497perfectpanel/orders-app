@@ -63,8 +63,8 @@ if (Yii::$app->request->get('get-csv')) {
 
     <!--Ссылка на скачивание CSV-файла заказов-->
     <?= Html::a(
-        'Download CSV-File →',
+        'Save result →',
         Url::current(['get-csv' => 'true']),
-        ['target' => '_blank']
+        ['target' => '_blank', 'style' => 'float: right;']
     ); ?>
 </div>

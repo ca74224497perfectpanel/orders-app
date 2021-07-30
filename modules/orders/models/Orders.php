@@ -19,6 +19,13 @@ use yii\db\ActiveRecord;
 class Orders extends ActiveRecord
 {
     /**
+     * Тип поиска.
+     */
+    const SEARCH_TYPE_ORDER_ID = 1;
+    const SEARCH_TYPE_LINK = 2;
+    const SEARCH_TYPE_USER_NAME = 3;
+
+    /**
      * Список статусов заказа.
      */
     const ORDER_STATUSES = [

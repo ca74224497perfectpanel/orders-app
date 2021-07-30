@@ -19,6 +19,8 @@ class DefaultController extends Controller
     public function actionIndex()
     {
         $status = Yii::$app->request->get('order-status');
+        $search = Yii::$app->request->get('search');
+        $srtype = Yii::$app->request->get('search-type');
 
         /**
          * Фильтрация по статусу заказа.
@@ -29,6 +31,26 @@ class DefaultController extends Controller
         } else {
             $orders = Orders::find();
         }
+
+        /**
+         * Поиск.
+         */
+        if (isset($search)) {
+            switch ((int)$srtype) {
+                case Orders::SEARCH_TYPE_ORDER_ID:
+                    $orders->where(['id' => $search]);
+                    break;
+                case Orders::SEARCH_TYPE_LINK:
+                    $orders->where(['like', 'link', $search]);
+                    break;
+                case Orders::SEARCH_TYPE_USER_NAME:
+                    // :: @TODO :: дописать поиск по имени пользователя.
+                    break;
+            }
+        }
+
+        // Сортировка заказов по "id" в обратном порядке.
+        $orders->orderBy(['id' => SORT_DESC]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $orders,
