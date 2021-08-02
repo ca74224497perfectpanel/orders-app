@@ -22,5 +22,6 @@ return [
     'Username' => '',
     'Search orders' => '',
     '{begin} to {end} of {totalCount}' => '',
+    'All' => '',
     'Save result →' => ''
 ];

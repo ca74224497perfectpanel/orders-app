@@ -13,9 +13,9 @@ use yii\db\ActiveRecord;
  * @property string $link
  * @property int $quantity
  * @property int $service_id
- * @property int $status 0 - Pending, 1 - In progress, 2 - Completed, 3 - Canceled, 4 - Fail
+ * @property int $status
  * @property int $created_at
- * @property int $mode 0 - Manual, 1 - Auto
+ * @property int $mode
  */
 class Orders extends ActiveRecord
 {
@@ -27,23 +27,20 @@ class Orders extends ActiveRecord
     const SEARCH_TYPE_USER_NAME = 3;
 
     /**
-     * Список статусов заказа.
+     * Режим заказа.
      */
-    const ORDER_STATUSES = [
-        0 => 'Pending',
-        1 => 'In progress',
-        2 => 'Completed',
-        3 => 'Canceled',
-        4 => 'Fail'
-    ];
+    const MODE_MANUAL = 0;
+    const MODE_AUTO = 1;
+    const MODE_ALL = 2;
 
     /**
-     * Список режимов.
+     * Статус заказа.
      */
-    const MODE_STATUSES = [
-        0 => 'Manual',
-        1 => 'Auto'
-    ];
+    const STATUS_PENDING = 0;
+    const STATUS_IN_PROGRESS = 1;
+    const STATUS_COMPLETED = 2;
+    const STATUS_CANCELED = 3;
+    const STATUS_FAIL = 4;
 
     /**
      * Получение списка типов поиска.
@@ -54,6 +51,32 @@ class Orders extends ActiveRecord
             self::SEARCH_TYPE_ORDER_ID => Yii::t('text', 'Order ID'),
             self::SEARCH_TYPE_LINK => Yii::t('text', 'Link'),
             self::SEARCH_TYPE_USER_NAME => Yii::t('text', 'Username')
+        ];
+    }
+
+    /**
+     * Получение списка режимов заказа.
+     * @return array
+     */
+    public static function getOrderModes(): array {
+        return [
+            self::MODE_MANUAL => Yii::t('text', 'Manual'),
+            self::MODE_AUTO => Yii::t('text', 'Auto'),
+            self::MODE_ALL => Yii::t('text', 'All')
+        ];
+    }
+
+    /**
+     * Получение статусов заказа.
+     * @return array
+     */
+    public static function getOrderStatuses(): array {
+        return [
+            self::STATUS_PENDING => 'Pending',
+            self::STATUS_IN_PROGRESS => 'In progress',
+            self::STATUS_COMPLETED => 'Completed',
+            self::STATUS_CANCELED => 'Canceled',
+            self::STATUS_FAIL => 'Fail'
         ];
     }
 

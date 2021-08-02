@@ -2,21 +2,21 @@
 
 namespace app\widgets;
 
-use app\modules\orders\models\Orders;
 use Yii;
 use yii\base\Widget;
 use yii\helpers\Url;
+use app\modules\orders\models\Orders;
 
 class GridControl extends Widget
 {
     public array $orderStatuses;
 
-    public function init()
+    public function init(): void
     {
         parent::init();
 
         if (empty($this->orderStatuses)) {
-            $this->orderStatuses = Orders::ORDER_STATUSES;
+            $this->orderStatuses = Orders::getOrderStatuses();
         }
     }
 
@@ -31,8 +31,8 @@ class GridControl extends Widget
         $srtype = Yii::$app->request->get('search-type');
 
         foreach ($this->orderStatuses as $key => $label) {
-            $active = isset($status) && (int)$status === $key ? 'class="active"' : '';
-            $html .= '<li $active><a href="' . $domain . '/?order-status=' . $key . '">' .
+            $active = is_numeric($status) && (int)$status === $key ? 'class="active"' : '';
+            $html .= '<li ' . $active . '><a href="' . $domain . '/?order-status=' . $key . '">' .
                 Yii::t('text', $label) . '</a></li>';
         }
 

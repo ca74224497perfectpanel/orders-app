@@ -21,22 +21,36 @@ class DefaultController extends Controller
         $status = Yii::$app->request->get('order-status');
         $search = Yii::$app->request->get('search');
         $srtype = Yii::$app->request->get('search-type');
+        $mode = Yii::$app->request->get('order-mode');
 
         /**
          * Фильтрация по статусу заказа.
          */
-        if (isset($status) &&
-            array_key_exists((int)$status, Orders::ORDER_STATUSES)) {
+        if (is_numeric($status) && array_key_exists(
+                $status,
+                Orders::getOrderStatuses()
+            )) {
             $orders = Orders::find()->where(['status' => $status]);
         } else {
             $orders = Orders::find();
         }
 
         /**
+         * Фильтрация по режиму.
+         */
+        if (is_numeric($mode) && array_key_exists(
+                $mode,
+                Orders::getOrderModes()
+            ) && (int)$mode !== Orders::MODE_ALL) {
+            $orders->where(['mode' => $mode]);
+        }
+
+        /**
          * Поиск.
          */
-        if (isset($search)) {
-            switch ((int)$srtype) {
+        if (!empty($search) && is_numeric($srtype) &&
+            array_key_exists($srtype, Orders::getOrderStatuses())) {
+            switch ($srtype) {
                 case Orders::SEARCH_TYPE_ORDER_ID:
                     $orders->where(['id' => $search]);
                     break;
@@ -44,9 +58,11 @@ class DefaultController extends Controller
                     $orders->where(['like', 'link', $search]);
                     break;
                 case Orders::SEARCH_TYPE_USER_NAME:
-                    $orders
-                        ->joinWith('user')
-                        ->where(['like', "CONCAT(first_name, ' ', last_name)", $search]);
+                    $orders->joinWith('user')->where([
+                        'like',
+                        "CONCAT(first_name, ' ', last_name)",
+                        $search
+                    ]);
                     break;
             }
         }

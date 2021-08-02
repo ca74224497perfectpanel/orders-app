@@ -2,26 +2,46 @@
 
 /* @var $dataProvider ActiveDataProvider */
 
+use yii\helpers\Url;
+use yii\helpers\Html;
 use yii\grid\GridView;
 use app\widgets\GridControl;
-use yii\helpers\Html;
-use yii\helpers\Url;
+use app\widgets\ModeDropdown;
 use yii2tech\csvgrid\CsvGrid;
+use app\widgets\ServiceDropdown;
 use app\modules\orders\models\Orders;
 
 // Описание столбцов таблицы.
 $columns = [
-    'id', 'user_id', 'link', 'quantity', 'service_id',
+    'id', 'user_id',
     [
-        'attribute' => 'status',
+        'attribute' => 'link',
+        'contentOptions' => ['class' => 'link']
+    ],
+    'quantity',
+    [
+        'header' => ServiceDropdown::widget(),
+        'attribute' => 'service_id',
+        'contentOptions' => ['class' => 'service'],
+        'headerOptions' => ['class' => 'dropdown-th'],
+        'format' => 'html',
         'value' => function ($item) {
-            return Yii::t('text', Orders::ORDER_STATUSES[$item->status]);
+            return '<span class="label-id">' .
+                $item->service_id . '</span> Likes';
         }
     ],
     [
-        'attribute' => 'mode',
+        'attribute' => 'status',
         'value' => function ($item) {
-            return Yii::t('text', Orders::MODE_STATUSES[$item->mode]);
+            return Orders::getOrderStatuses()[$item->status];
+        }
+    ],
+    [
+        'header' => ModeDropdown::widget(),
+        'attribute' => 'mode',
+        'headerOptions' => ['class' => 'dropdown-th'],
+        'value' => function ($item) {
+            return Orders::getOrderModes()[$item->mode];
         }
     ],
     [
@@ -47,7 +67,8 @@ if (Yii::$app->request->get('get-csv')) {
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'summary' => Yii::t('text', '{begin} to {end} of {totalCount}'),
-        'columns' => $columns
+        'columns' => $columns,
+        'tableOptions' => ['class' => 'table order-table']
      ]); ?>
 
     <!--Ссылка на скачивание CSV-файла заказов-->

@@ -3,7 +3,7 @@
 return [
     'Orders' => 'Заказы',
     'All orders' => 'Все заказы',
-    'Pending' => 'В ожидании',
+    'Pending' => 'Ожидает',
     'In progress' => 'В процессе',
     'Completed' => 'Завершен',
     'Canceled' => 'Отменен',
@@ -22,5 +22,6 @@ return [
     'Username' => 'Имя пользователя',
     'Search orders' => 'Поиск заказов',
     '{begin} to {end} of {totalCount}' => '{begin} — {end} из {totalCount}',
+    'All' => 'Все',
     'Save result →' => 'Сохранить результат →'
 ];
