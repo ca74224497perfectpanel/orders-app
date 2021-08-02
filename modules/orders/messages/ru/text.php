@@ -21,5 +21,6 @@ return [
     'Order ID' => 'ИД заказа',
     'Username' => 'Имя пользователя',
     'Search orders' => 'Поиск заказов',
+    '{begin} to {end} of {totalCount}' => '{begin} — {end} из {totalCount}',
     'Save result →' => 'Сохранить результат →'
 ];

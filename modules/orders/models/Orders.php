@@ -102,4 +102,12 @@ class Orders extends ActiveRecord
     {
         return new OrdersQuery(get_called_class());
     }
+
+    /**
+     * Связанный с заказом пользователь.
+     * @return UsersQuery
+     */
+    public function getUser(): UsersQuery {
+        return $this->hasOne(Users::class, ['id' => 'user_id']);
+    }
 }

@@ -44,7 +44,9 @@ class DefaultController extends Controller
                     $orders->where(['like', 'link', $search]);
                     break;
                 case Orders::SEARCH_TYPE_USER_NAME:
-                    // :: @TODO :: дописать поиск по имени пользователя.
+                    $orders
+                        ->joinWith('user')
+                        ->where(['like', "CONCAT(first_name, ' ', last_name)", $search]);
                     break;
             }
         }

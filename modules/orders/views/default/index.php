@@ -46,7 +46,7 @@ if (Yii::$app->request->get('get-csv')) {
     <!--Таблица с данными-->
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        'summary' => '{begin} to {end} of {totalCount}',
+        'summary' => Yii::t('text', '{begin} to {end} of {totalCount}'),
         'columns' => $columns
      ]); ?>
 

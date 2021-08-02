@@ -21,5 +21,6 @@ return [
     'Order ID' => '',
     'Username' => '',
     'Search orders' => '',
+    '{begin} to {end} of {totalCount}' => '',
     'Save result →' => ''
 ];
