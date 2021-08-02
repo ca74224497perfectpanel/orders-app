@@ -3,9 +3,11 @@
 /* @var $this \yii\web\View */
 /* @var $content string */
 
+use app\helpers\Utils;
 use yii\helpers\Html;
 use app\assets\AppAsset;
 use app\assets\PolyfillsAsset;
+use yii\helpers\Url;
 
 AppAsset::register($this);
 PolyfillsAsset::register($this);
@@ -24,6 +26,30 @@ PolyfillsAsset::register($this);
     <?php $this->beginBody() ?>
         <div class="wrap">
             <div class="container">
+                <nav class="navbar navbar-fixed-top navbar-default">
+                    <div class="container-fluid">
+                        <div class="collapse navbar-collapse" id="bs-navbar-collapse">
+                            <span class="languages">
+                                <?php foreach (Utils::getModuleLanguages() as $language): ?>
+                                    <?= Html::a(
+                                        $language,
+                                        Utils::getCurrentUrlWithLang($language),
+                                        [
+                                            'class' => Yii::$app->language === $language ?
+                                                'languages__item_underlined' : ''
+                                        ]
+                                    ); ?>
+                                    <span class="languages__delimiter">&nbsp;|&nbsp;</span>
+                                <?php endforeach; ?>
+                            </span>
+                            <ul class="nav navbar-nav">
+                                <li class="active">
+                                    <a href="<?= Url::current(); ?>">Orders</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
                 <?= $content ?>
             </div>
         </div>

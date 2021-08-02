@@ -2963,3 +2963,16 @@ input[type="checkbox"].selectOrder{
   bottom: 30px;
   right: 0;
 }
+
+.languages {
+  float: right;
+  margin: 15px 20px 0 0;
+}
+
+.languages__item_underlined {
+  text-decoration: underline;
+}
+
+.languages__delimiter:last-child {
+  display: none;
+}

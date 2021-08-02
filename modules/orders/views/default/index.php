@@ -39,17 +39,6 @@ if (Yii::$app->request->get('get-csv')) {
     $exporter->export()->send('orders.csv');
 }
 ?>
-<nav class="navbar navbar-fixed-top navbar-default">
-    <div class="container-fluid">
-        <div class="collapse navbar-collapse" id="bs-navbar-collapse">
-            <ul class="nav navbar-nav">
-                <li class="active">
-                    <a href="<?= Url::current(); ?>">Orders</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
 <div class="container-fluid">
     <!--Фильтр статуса и поиск-->
     <?= GridControl::widget(); ?>
