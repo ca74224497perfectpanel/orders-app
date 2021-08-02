@@ -23,6 +23,7 @@ class GridControl extends Widget
     public function run(): string
     {
         $html = '';
+        $searchOptions = '';
         $domain = Url::canonical();
 
         $status = Yii::$app->request->get('order-status');
@@ -31,13 +32,19 @@ class GridControl extends Widget
 
         foreach ($this->orderStatuses as $key => $label) {
             $active = isset($status) && (int)$status === $key ? 'class="active"' : '';
-            $html .= "<li $active><a href='$domain/?order-status=$key'>$label</a></li>";
+            $html .= '<li $active><a href="' . $domain . '/?order-status=' . $key . '">' .
+                Yii::t('text', $label) . '</a></li>';
+        }
+
+        foreach (Orders::getSearchTypes() as $key => $label) {
+            $searchOptions .= '<option value="' . $key . '" ' .
+                ((int)$srtype === $key ? 'selected' : '').'>' . $label . '</option>';
         }
 
         return '
          <ul class="nav nav-tabs p-b">
             <li ' . (isset($status) ? '' : 'class="active"') . '>
-                <a href="' . $domain . '">All orders</a>
+                <a href="' . $domain . '">' . Yii::t('text', 'All orders') . '</a>
             </li>' . $html . '
             <li class="pull-right custom-search">
                 <form class="form-inline" 
@@ -48,14 +55,12 @@ class GridControl extends Widget
                                name="search" 
                                class="form-control" 
                                value="' . $search . '" 
-                               placeholder="Search orders" />
+                               placeholder="' . Yii::t('text', 'Search orders') . '" />
                         ' . (isset($status) ? '<input type="hidden" name="order-status" value="' . $status . '" />' : '') . '
                         <span class="input-group-btn search-select-wrap">
                             <select class="form-control search-select" 
                                     name="search-type" />
-                                <option value="' . Orders::SEARCH_TYPE_ORDER_ID  . '" ' . ((int)$srtype === Orders::SEARCH_TYPE_ORDER_ID  ? 'selected' : '') . '>Order ID</option>
-                                <option value="' . Orders::SEARCH_TYPE_LINK      . '" ' . ((int)$srtype === Orders::SEARCH_TYPE_LINK      ? 'selected' : '') . '>Link</option>
-                                <option value="' . Orders::SEARCH_TYPE_USER_NAME . '" ' . ((int)$srtype === Orders::SEARCH_TYPE_USER_NAME ? 'selected' : '') . '>Username</option>
+                                ' . $searchOptions . '
                             </select>
                             <button type="submit" 
                                     class="btn btn-default">

@@ -15,13 +15,13 @@ $columns = [
     [
         'attribute' => 'status',
         'value' => function ($item) {
-            return Orders::ORDER_STATUSES[$item->status];
+            return Yii::t('text', Orders::ORDER_STATUSES[$item->status]);
         }
     ],
     [
         'attribute' => 'mode',
         'value' => function ($item) {
-            return Orders::MODE_STATUSES[$item->mode];
+            return Yii::t('text', Orders::MODE_STATUSES[$item->mode]);
         }
     ],
     [
@@ -52,7 +52,7 @@ if (Yii::$app->request->get('get-csv')) {
 
     <!--Ссылка на скачивание CSV-файла заказов-->
     <?= Html::a(
-        'Save result →',
+        Yii::t('text', 'Save result →'),
         Url::current(['get-csv' => 'true']),
         ['target' => '_blank', 'style' => 'float: right;']
     ); ?>

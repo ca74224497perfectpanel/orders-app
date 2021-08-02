@@ -2,6 +2,7 @@
 
 namespace app\modules\orders\models;
 
+use Yii;
 use yii\db\ActiveRecord;
 
 /**
@@ -45,6 +46,18 @@ class Orders extends ActiveRecord
     ];
 
     /**
+     * Получение списка типов поиска.
+     * @return int[]
+     */
+    public static function getSearchTypes(): array {
+        return [
+            self::SEARCH_TYPE_ORDER_ID => Yii::t('text', 'Order ID'),
+            self::SEARCH_TYPE_LINK => Yii::t('text', 'Link'),
+            self::SEARCH_TYPE_USER_NAME => Yii::t('text', 'Username')
+        ];
+    }
+
+    /**
      * {@inheritdoc}
      */
     public static function tableName(): string
@@ -70,14 +83,14 @@ class Orders extends ActiveRecord
     public function attributeLabels(): array
     {
         return [
-            'id' => 'ID',
-            'user_id' => 'User',
-            'link' => 'Link',
-            'quantity' => 'Quantity',
-            'service_id' => 'Service',
-            'status' => 'Status',
-            'created_at' => 'Created',
-            'mode' => 'Mode',
+            'id' => Yii::t('text', 'ID'),
+            'user_id' => Yii::t('text', 'User'),
+            'link' => Yii::t('text', 'Link'),
+            'quantity' => Yii::t('text', 'Quantity'),
+            'service_id' => Yii::t('text', 'Service'),
+            'status' => Yii::t('text', 'Status'),
+            'created_at' => Yii::t('text', 'Created'),
+            'mode' => Yii::t('text', 'Mode'),
         ];
     }
 

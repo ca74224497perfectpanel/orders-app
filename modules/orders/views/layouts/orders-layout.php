@@ -19,7 +19,7 @@ PolyfillsAsset::register($this);
         <meta charset="<?= Yii::$app->charset ?>" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title><?= Html::encode($this->title) ?></title>
+        <title><?= Yii::t('text', 'Orders'); ?></title>
         <?php $this->head() ?>
     </head>
     <body>
@@ -44,7 +44,9 @@ PolyfillsAsset::register($this);
                             </span>
                             <ul class="nav navbar-nav">
                                 <li class="active">
-                                    <a href="<?= Url::current(); ?>">Orders</a>
+                                    <a href="<?= Url::current(); ?>">
+                                        <?= Yii::t('text', 'Orders'); ?>
+                                    </a>
                                 </li>
                             </ul>
                         </div>
