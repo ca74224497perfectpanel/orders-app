@@ -22,7 +22,6 @@ class GridControl extends Widget
 
     public function run(): string
     {
-        $html = '';
         $searchOptions = '';
         $domain = Url::canonical();
 
@@ -30,10 +29,22 @@ class GridControl extends Widget
         $search = Yii::$app->request->get('search');
         $srtype = Yii::$app->request->get('search-type');
 
+        $html = "
+        <li " . (is_numeric($status) ? '' : 'class="active"') . ">
+            <a href='$domain/?order-status=all"  . (empty($search) ? "" : "&search=$search&search-type=$srtype") . "'>
+                " . Yii::t('text', 'All orders') . "
+            </a>
+        </li>
+        ";
         foreach ($this->orderStatuses as $key => $label) {
             $active = is_numeric($status) && (int)$status === $key ? 'class="active"' : '';
-            $html .= '<li ' . $active . '><a href="' . $domain . '/?order-status=' . $key . '">' .
-                Yii::t('text', $label) . '</a></li>';
+            $html .= "
+                <li $active>
+                    <a href='$domain/?order-status=$key" . (empty($search) ? "" : "&search=$search&search-type=$srtype") . "'>
+                        $label
+                    </a>
+                </li>
+            ";
         }
 
         foreach (Orders::getSearchTypes() as $key => $label) {
@@ -42,10 +53,7 @@ class GridControl extends Widget
         }
 
         return '
-         <ul class="nav nav-tabs p-b">
-            <li ' . (isset($status) ? '' : 'class="active"') . '>
-                <a href="' . $domain . '">' . Yii::t('text', 'All orders') . '</a>
-            </li>' . $html . '
+         <ul class="nav nav-tabs p-b">' . $html . '
             <li class="pull-right custom-search">
                 <form class="form-inline" 
                       action="' . $domain . '" 
@@ -56,7 +64,7 @@ class GridControl extends Widget
                                class="form-control" 
                                value="' . $search . '" 
                                placeholder="' . Yii::t('text', 'Search orders') . '" />
-                        ' . (isset($status) ? '<input type="hidden" name="order-status" value="' . $status . '" />' : '') . '
+                        ' . (is_numeric($status) ? '<input type="hidden" name="order-status" value="' . $status  . '" />' : '') . '
                         <span class="input-group-btn search-select-wrap">
                             <select class="form-control search-select" 
                                     name="search-type" />

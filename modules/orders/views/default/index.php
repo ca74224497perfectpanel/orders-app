@@ -13,7 +13,14 @@ use app\modules\orders\models\Orders;
 
 // Описание столбцов таблицы.
 $columns = [
-    'id', 'user_id',
+    'id',
+    [
+        'attribute' => 'user_id',
+        'value' => function ($item) {
+            return $item->user->first_name . ' ' .
+                   $item->user->last_name;
+        }
+    ],
     [
         'attribute' => 'link',
         'contentOptions' => ['class' => 'link']
@@ -27,7 +34,7 @@ $columns = [
         'format' => 'html',
         'value' => function ($item) {
             return '<span class="label-id">' .
-                $item->service_id . '</span> Likes';
+                $item->service->id . '</span> ' . $item->service->name;
         }
     ],
     [
@@ -46,17 +53,44 @@ $columns = [
     ],
     [
         'attribute' => 'created_at',
-        'format' => ['date', 'php:Y-m-d H:i:s']
+        'format' => 'html',
+        'value' => function ($item) {
+            return '<span class="nowrap">' . date('Y-m-d', $item->created_at) . '</span>' .
+                   '<span class="nowrap">' . date('H:i:s', $item->created_at) . '</span>';
+        }
     ]
 ];
 
 /* Отдаем CSV-файл по запросу */
 if (Yii::$app->request->get('get-csv')) {
+
+    // Редактируем колонки для репрезентации в csv-формате.
+
+    $columns[2] = ['attribute' => 'link'];
+    $columns[4] = [
+        'attribute' => 'service_id',
+        'value' => function ($item) {
+            return "{$item->service->name} ({$item->service->id})";
+        }
+    ];
+
+    unset($columns[6]['header']);
+    unset($columns[6]['headerOptions']);
+
+    $columns[7] = [
+        'attribute' => 'created_at',
+        'value' => function ($item) {
+            return date('Y-m-d', $item->created_at) . PHP_EOL .
+                   date('H:i:s', $item->created_at);
+        }
+    ];
+
     $exporter = new CsvGrid([
         'dataProvider' => $dataProvider,
-        'columns' => $columns]
-    );
+        'columns' => $columns
+    ]);
     $exporter->export()->send('orders.csv');
+
 }
 ?>
 <div class="container-fluid">
@@ -67,14 +101,18 @@ if (Yii::$app->request->get('get-csv')) {
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'summary' => Yii::t('text', '{begin} to {end} of {totalCount}'),
+        'summaryOptions' => ['class' => 'table-summary'],
         'columns' => $columns,
-        'tableOptions' => ['class' => 'table order-table']
+        'tableOptions' => ['class' => 'table order-table'],
+        'layout' => '{items}{pager}{summary}'
      ]); ?>
 
     <!--Ссылка на скачивание CSV-файла заказов-->
-    <?= Html::a(
-        Yii::t('text', 'Save result →'),
-        Url::current(['get-csv' => 'true']),
-        ['target' => '_blank', 'style' => 'float: right;']
-    ); ?>
+    <div class="csv-download">
+        <?= Html::a(
+            Yii::t('text', 'Save result →'),
+            Url::current(['get-csv' => 'true']),
+            ['target' => '_blank']
+        ); ?>
+    </div>
 </div>

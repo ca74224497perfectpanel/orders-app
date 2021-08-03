@@ -2954,14 +2954,15 @@ input[type="checkbox"].selectOrder{
   display: inline-block;
 }
 
-.grid-view {
-  position: relative;
+.table-summary {
+  float: right;
+  margin-top: 20px;
 }
 
-.grid-view .summary {
-  position: absolute;
-  bottom: 30px;
-  right: 0;
+.csv-download {
+  clear: both;
+  padding-top: 10px;
+  text-align: right;
 }
 
 .languages {
@@ -2975,4 +2976,9 @@ input[type="checkbox"].selectOrder{
 
 .languages__delimiter:last-child {
   display: none;
+}
+
+.container {
+  width: 100%;
+  padding: 0;
 }

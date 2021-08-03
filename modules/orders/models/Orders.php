@@ -2,6 +2,7 @@
 
 namespace app\modules\orders\models;
 
+use Throwable;
 use Yii;
 use yii\db\ActiveRecord;
 
@@ -72,11 +73,11 @@ class Orders extends ActiveRecord
      */
     public static function getOrderStatuses(): array {
         return [
-            self::STATUS_PENDING => 'Pending',
-            self::STATUS_IN_PROGRESS => 'In progress',
-            self::STATUS_COMPLETED => 'Completed',
-            self::STATUS_CANCELED => 'Canceled',
-            self::STATUS_FAIL => 'Fail'
+            self::STATUS_PENDING => Yii::t('text', 'Pending'),
+            self::STATUS_IN_PROGRESS => Yii::t('text', 'In progress'),
+            self::STATUS_COMPLETED => Yii::t('text', 'Completed'),
+            self::STATUS_CANCELED => Yii::t('text', 'Canceled'),
+            self::STATUS_FAIL => Yii::t('text', 'Fail')
         ];
     }
 
@@ -131,6 +132,50 @@ class Orders extends ActiveRecord
      * @return UsersQuery
      */
     public function getUser(): UsersQuery {
-        return $this->hasOne(Users::class, ['id' => 'user_id']);
+        return $this->hasOne(Users::class, [
+            'id' => 'user_id'
+        ]);
+    }
+
+    /**
+     * Связанный с заказом сервис.
+     * @return ServicesQuery
+     */
+    public function getService(): ServicesQuery {
+        return $this->hasOne(Services::class, [
+            'id' => 'service_id'
+        ]);
+    }
+
+    /**
+     * Получение количества заказов по сервисам + общее количество заказов.
+     * @return array
+     */
+    public static function getOrdersCountByServices(): array {
+        $sql = '
+            SELECT t1.id, t1.count, t2.name FROM
+            (
+                SELECT service_id AS id, COUNT(*) AS count
+                FROM orders
+                GROUP BY service_id
+                UNION
+                SELECT 0, COUNT(*)
+                FROM orders
+            ) AS t1
+            LEFT JOIN services AS t2
+            ON t1.id = t2.id
+            ORDER BY t1.count DESC';
+
+        try {
+            $data = Yii::$app
+                ->getDb()
+                ->createCommand($sql)
+                ->queryAll();
+        } catch (Throwable $t) {
+            error_log($t->getMessage());
+            return [];
+        }
+
+        return empty($data) ? [] : $data;
     }
 }
