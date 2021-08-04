@@ -32,7 +32,7 @@ class ModeDropdown extends Widget
                     data-toggle="dropdown" 
                     aria-haspopup="true" 
                     aria-expanded="true">
-                ' . Yii::t('text', 'Mode') . '
+                ' . Yii::t('text', 'orders.grid.column.mode') . '
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">' . $options . '</ul>

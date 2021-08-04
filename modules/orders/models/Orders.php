@@ -49,9 +49,9 @@ class Orders extends ActiveRecord
      */
     public static function getSearchTypes(): array {
         return [
-            self::SEARCH_TYPE_ORDER_ID => Yii::t('text', 'Order ID'),
-            self::SEARCH_TYPE_LINK => Yii::t('text', 'Link'),
-            self::SEARCH_TYPE_USER_NAME => Yii::t('text', 'Username')
+            self::SEARCH_TYPE_ORDER_ID => Yii::t('text', 'orders.search.type.id'),
+            self::SEARCH_TYPE_LINK => Yii::t('text', 'orders.search.type.link'),
+            self::SEARCH_TYPE_USER_NAME => Yii::t('text', 'orders.search.type.username')
         ];
     }
 
@@ -61,9 +61,9 @@ class Orders extends ActiveRecord
      */
     public static function getOrderModes(): array {
         return [
-            self::MODE_MANUAL => Yii::t('text', 'Manual'),
-            self::MODE_AUTO => Yii::t('text', 'Auto'),
-            self::MODE_ALL => Yii::t('text', 'All')
+            self::MODE_MANUAL => Yii::t('text', 'orders.mode.manual'),
+            self::MODE_AUTO => Yii::t('text', 'orders.mode.auto'),
+            self::MODE_ALL => Yii::t('text', 'orders.mode.all')
         ];
     }
 
@@ -73,11 +73,11 @@ class Orders extends ActiveRecord
      */
     public static function getOrderStatuses(): array {
         return [
-            self::STATUS_PENDING => Yii::t('text', 'Pending'),
-            self::STATUS_IN_PROGRESS => Yii::t('text', 'In progress'),
-            self::STATUS_COMPLETED => Yii::t('text', 'Completed'),
-            self::STATUS_CANCELED => Yii::t('text', 'Canceled'),
-            self::STATUS_FAIL => Yii::t('text', 'Fail')
+            self::STATUS_PENDING => Yii::t('text', 'orders.status.pending'),
+            self::STATUS_IN_PROGRESS => Yii::t('text', 'orders.status.inprogress'),
+            self::STATUS_COMPLETED => Yii::t('text', 'orders.status.completed'),
+            self::STATUS_CANCELED => Yii::t('text', 'orders.status.canceled'),
+            self::STATUS_FAIL => Yii::t('text', 'orders.status.fail')
         ];
     }
 
@@ -107,14 +107,14 @@ class Orders extends ActiveRecord
     public function attributeLabels(): array
     {
         return [
-            'id' => Yii::t('text', 'ID'),
-            'user_id' => Yii::t('text', 'User'),
-            'link' => Yii::t('text', 'Link'),
-            'quantity' => Yii::t('text', 'Quantity'),
-            'service_id' => Yii::t('text', 'Service'),
-            'status' => Yii::t('text', 'Status'),
-            'created_at' => Yii::t('text', 'Created'),
-            'mode' => Yii::t('text', 'Mode'),
+            'id' => Yii::t('text', 'orders.grid.column.id'),
+            'user_id' => Yii::t('text', 'orders.grid.column.user'),
+            'link' => Yii::t('text', 'orders.grid.column.link'),
+            'quantity' => Yii::t('text', 'orders.grid.column.quantity'),
+            'service_id' => Yii::t('text', 'orders.grid.column.service'),
+            'status' => Yii::t('text', 'orders.grid.column.status'),
+            'created_at' => Yii::t('text', 'orders.grid.column.created'),
+            'mode' => Yii::t('text', 'orders.grid.column.mode'),
         ];
     }
 

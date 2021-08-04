@@ -20,7 +20,7 @@ class ServiceDropdown extends Widget
         $service = Yii::$app->request->get('service');
 
         foreach (Orders::getOrdersCountByServices() as $item) {
-            $allText = Yii::t('text', 'All');
+            $allText = Yii::t('text', 'orders.filter.all');
             $url = Url::current(['service' => $item['id']], true);
             $active = is_numeric($service) && (int)$service === (int)$item['id']
                 ? 'class="active"' : '';
@@ -38,7 +38,7 @@ class ServiceDropdown extends Widget
                     data-toggle="dropdown" 
                     aria-haspopup="true" 
                     aria-expanded="true">
-                ' . Yii::t('text', 'Service') . '
+                ' . Yii::t('text', 'orders.grid.column.service') . '
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">' . $options . '</ul>

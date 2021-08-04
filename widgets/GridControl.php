@@ -32,7 +32,7 @@ class GridControl extends Widget
         $html = "
         <li " . (is_numeric($status) ? '' : 'class="active"') . ">
             <a href='$domain/?order-status=all"  . (empty($search) ? "" : "&search=$search&search-type=$srtype") . "'>
-                " . Yii::t('text', 'All orders') . "
+                " . Yii::t('text', 'orders.status.all') . "
             </a>
         </li>
         ";
@@ -63,7 +63,7 @@ class GridControl extends Widget
                                name="search" 
                                class="form-control" 
                                value="' . $search . '" 
-                               placeholder="' . Yii::t('text', 'Search orders') . '" />
+                               placeholder="' . Yii::t('text', 'orders.search.placeholder') . '" />
                         ' . (is_numeric($status) ? '<input type="hidden" name="order-status" value="' . $status  . '" />' : '') . '
                         <span class="input-group-btn search-select-wrap">
                             <select class="form-control search-select" 

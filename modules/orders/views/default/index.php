@@ -100,7 +100,7 @@ if (Yii::$app->request->get('get-csv')) {
     <!--Таблица с данными-->
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        'summary' => Yii::t('text', '{begin} to {end} of {totalCount}'),
+        'summary' => Yii::t('text', 'orders.grid.summary'),
         'summaryOptions' => ['class' => 'table-summary'],
         'columns' => $columns,
         'tableOptions' => ['class' => 'table order-table'],
@@ -110,7 +110,7 @@ if (Yii::$app->request->get('get-csv')) {
     <!--Ссылка на скачивание CSV-файла заказов-->
     <div class="csv-download">
         <?= Html::a(
-            Yii::t('text', 'Save result →'),
+            Yii::t('text', 'orders.link.csv'),
             Url::current(['get-csv' => 'true']),
             ['target' => '_blank']
         ); ?>
