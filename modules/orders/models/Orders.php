@@ -167,10 +167,21 @@ class Orders extends ActiveRecord
             ORDER BY t1.count DESC';
 
         try {
-            $data = Yii::$app
-                ->getDb()
-                ->createCommand($sql)
-                ->queryAll();
+            $key = 'services-stat';
+            $cache = Yii::$app->cache;
+            $expiration = Yii::$app->params['cache_expiration'];
+
+            // Получаем данные о статистике по сервисам из кэша.
+            $data = $cache->get($key);
+
+            if ($data === false /* в кэше нет данных */) {
+                $data = Yii::$app
+                    ->getDb()
+                    ->createCommand($sql)
+                    ->queryAll();
+
+                $cache->set($key, $data, $expiration);
+            }
         } catch (Throwable $t) {
             error_log($t->getMessage());
             return [];

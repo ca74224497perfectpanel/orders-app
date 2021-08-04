@@ -19,7 +19,8 @@ $config = [
             'baseUrl' => ''
         ],
         'cache' => [
-            'class' => 'yii\caching\FileCache',
+            'class' => 'yii\caching\MemCache',
+            'useMemcached' => true
         ],
         'errorHandler' => [
             'errorAction' => 'orders/default/error',

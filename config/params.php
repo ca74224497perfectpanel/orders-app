@@ -1,7 +1,5 @@
 <?php
 
 return [
-    'adminEmail' => '',
-    'senderEmail' => '',
-    'senderName' => '',
+    'cache_expiration' => 10 * 60 // 10 minutes
 ];
