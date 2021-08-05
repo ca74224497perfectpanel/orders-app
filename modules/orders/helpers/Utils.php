@@ -1,6 +1,6 @@
 <?php
 
-namespace app\helpers;
+namespace app\modules\orders\helpers;
 
 use Yii;
 use yii\helpers\Url;

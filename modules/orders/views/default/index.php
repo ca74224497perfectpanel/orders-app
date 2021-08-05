@@ -5,11 +5,11 @@
 use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\grid\GridView;
-use app\widgets\GridControl;
-use app\widgets\ModeDropdown;
 use yii2tech\csvgrid\CsvGrid;
-use app\widgets\ServiceDropdown;
 use app\modules\orders\models\Orders;
+use app\modules\orders\widgets\GridControl;
+use app\modules\orders\widgets\ModeDropdown;
+use app\modules\orders\widgets\ServiceDropdown;
 
 // Описание столбцов таблицы.
 $columns = [

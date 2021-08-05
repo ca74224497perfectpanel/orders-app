@@ -3,7 +3,7 @@
 /* @var $this \yii\web\View */
 /* @var $content string */
 
-use app\helpers\Utils;
+use app\modules\orders\helpers\Utils;
 use yii\helpers\Html;
 use app\assets\AppAsset;
 use app\assets\PolyfillsAsset;

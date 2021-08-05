@@ -2,12 +2,12 @@
 
 namespace app\modules\orders;
 
-use Yii;
+use yii\base\Module;
 
 /**
  * orders module definition class
  */
-class OrdersModule extends \yii\base\Module
+class OrdersModule extends Module
 {
     /**
      * {@inheritdoc}
@@ -21,7 +21,7 @@ class OrdersModule extends \yii\base\Module
     {
         parent::init();
 
-        // У модуля свой собственный лэйоут.
+        // У модуля свой собственный лэйаут.
         $this->layout = 'orders-layout';
     }
 }
