@@ -5,6 +5,8 @@ namespace app\modules\orders\models;
 use Throwable;
 use Yii;
 use yii\db\ActiveRecord;
+use yii\db\Expression;
+use yii\db\Query;
 
 /**
  * This is the model class for table "orders".
@@ -152,39 +154,36 @@ class Orders extends ActiveRecord
      * @return array
      */
     public static function getOrdersCountByServices(): array {
-        $sql = '
-            SELECT t1.id, t1.count, t2.name FROM
-            (
-                SELECT service_id AS id, COUNT(*) AS count
-                FROM orders
-                GROUP BY service_id
-                UNION
-                SELECT 0, COUNT(*)
-                FROM orders
-            ) AS t1
-            LEFT JOIN services AS t2
-            ON t1.id = t2.id
-            ORDER BY t1.count DESC';
+        $key = 'services-stat';
+        $cache = Yii::$app->cache;
+        $expiration = Yii::$app->params['cache_expiration'];
 
-        try {
-            $key = 'services-stat';
-            $cache = Yii::$app->cache;
-            $expiration = Yii::$app->params['cache_expiration'];
+        // Получаем данные о статистике по сервисам из кэша.
+        $data = $cache->get($key);
 
-            // Получаем данные о статистике по сервисам из кэша.
-            $data = $cache->get($key);
+        if ($data === false /* в кэше нет данных */) {
 
-            if ($data === false /* в кэше нет данных */) {
-                $data = Yii::$app
-                    ->getDb()
-                    ->createCommand($sql)
-                    ->queryAll();
+            // Запрашиваем данные из БД.
+            $byServicesQuery = (new Query())
+                ->select(['service_id AS id', 'COUNT(*) AS count'])
+                ->from('orders')
+                ->groupBy(['service_id']);
 
-                $cache->set($key, $data, $expiration);
-            }
-        } catch (Throwable $t) {
-            error_log($t->getMessage());
-            return [];
+            $totalQuery = (new Query())
+                ->select([new Expression(0), 'COUNT(*)'])
+                ->from('orders');
+
+            $byServicesQuery->union($totalQuery);
+
+            $data = (new Query())
+                ->select(['t1.id', 't1.count', 't2.name'])
+                ->from(['t1' => $byServicesQuery])
+                ->leftJoin('services AS t2', 't1.id = t2.id')
+                ->orderBy('t1.count DESC')
+                ->all();
+
+            // Заносим данные в кэш.
+            $cache->set($key, $data, $expiration);
         }
 
         return empty($data) ? [] : $data;
