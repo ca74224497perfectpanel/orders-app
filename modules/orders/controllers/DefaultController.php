@@ -33,7 +33,7 @@ class DefaultController extends Controller
             $adpParams = [
                 'query' => $orderSearch->getQuery(),
                 'pagination' => [
-                    'pageSize' => 100
+                    'pageSize' => Yii::$app->params['orders_per_page']
                 ]
             ];
 
