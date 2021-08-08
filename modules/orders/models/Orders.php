@@ -1,12 +1,14 @@
-<?php
+<?php /** @noinspection PhpUnused */
 
 namespace app\modules\orders\models;
 
-use Throwable;
 use Yii;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
 use yii\db\Query;
+use app\modules\orders\models\queries\OrdersQuery;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "orders".
@@ -44,6 +46,29 @@ class Orders extends ActiveRecord
     const STATUS_COMPLETED = 2;
     const STATUS_CANCELED = 3;
     const STATUS_FAIL = 4;
+
+    /**
+     * Сценарии для валидации данных.
+     */
+    const SCENARIO_SEARCH = 'search';
+
+    /**
+     * Кастомные атрибуты.
+     */
+    public ?string $search = null;
+    public ?int $search_type = null;
+
+    /**
+     * Добавляем кастомные атрибуты в модель.
+     * @return array
+     */
+    public function attributes(): array
+    {
+        return ArrayHelper::merge(parent::attributes(), [
+            'search',
+            'search_type'
+        ]);
+    }
 
     /**
      * Получение списка типов поиска.
@@ -97,9 +122,12 @@ class Orders extends ActiveRecord
     public function rules(): array
     {
         return [
-            [['user_id', 'link', 'quantity', 'service_id', 'status', 'created_at', 'mode'], 'required'],
-            [['user_id', 'quantity', 'service_id', 'status', 'created_at', 'mode'], 'integer'],
-            [['link'], 'string', 'max' => 300],
+            [['status', 'mode', 'service_id', 'search_type'], 'integer', 'skipOnEmpty' => true, 'on' => self::SCENARIO_SEARCH],
+            ['status', 'in', 'range' => array_keys(self::getOrderStatuses()), 'skipOnEmpty' => true, 'on' => self::SCENARIO_SEARCH],
+            ['mode', 'in', 'range' => array_keys(self::getOrderModes()), 'skipOnEmpty' => true, 'on' => self::SCENARIO_SEARCH],
+            ['search_type', 'in', 'range' => array_keys(self::getSearchTypes()), 'skipOnEmpty' => true, 'on' => self::SCENARIO_SEARCH],
+            [['search'], 'string', 'min' => 1, 'max' => 500, 'skipOnEmpty' => true, 'on' => self::SCENARIO_SEARCH],
+            [['id', 'user_id', 'link', 'quantity', 'created_at'], 'safe', 'on' => self::SCENARIO_SEARCH]
         ];
     }
 
@@ -131,9 +159,9 @@ class Orders extends ActiveRecord
 
     /**
      * Связанный с заказом пользователь.
-     * @return UsersQuery
+     * @return ActiveQuery
      */
-    public function getUser(): UsersQuery {
+    public function getUser(): ActiveQuery {
         return $this->hasOne(Users::class, [
             'id' => 'user_id'
         ]);
@@ -141,9 +169,10 @@ class Orders extends ActiveRecord
 
     /**
      * Связанный с заказом сервис.
-     * @return ServicesQuery
+     * @return ActiveQuery
      */
-    public function getService(): ServicesQuery {
+    public function getService(): ActiveQuery
+    {
         return $this->hasOne(Services::class, [
             'id' => 'service_id'
         ]);

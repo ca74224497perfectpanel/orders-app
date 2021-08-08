@@ -25,9 +25,9 @@ class GridControl extends Widget
         return $this->render('grid-control', [
             'orderStatuses' => $this->orderStatuses,
             'searchTypes' => Orders::getSearchTypes(),
-            'status' => Yii::$app->request->get('order-status'),
+            'status' => Yii::$app->request->get('status'),
             'search' => Yii::$app->request->get('search'),
-            'srtype' => Yii::$app->request->get('search-type'),
+            'srtype' => Yii::$app->request->get('search_type'),
             'domain' => Url::canonical()
         ]);
     }

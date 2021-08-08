@@ -1,13 +1,14 @@
 <?php
 
-/* @var $this \yii\web\View */
+/* @var $this View */
 /* @var $content string */
 
-use app\modules\orders\helpers\Utils;
+use yii\web\View;
+use yii\helpers\Url;
 use yii\helpers\Html;
 use app\assets\AppAsset;
 use app\assets\PolyfillsAsset;
-use yii\helpers\Url;
+use app\modules\orders\helpers\Utils;
 
 AppAsset::register($this);
 PolyfillsAsset::register($this);
@@ -31,9 +32,7 @@ PolyfillsAsset::register($this);
                         <div class="collapse navbar-collapse" id="bs-navbar-collapse">
                             <span class="languages">
                                 <?php foreach (Utils::getModuleLanguages() as $language): ?>
-                                    <?= Html::a(
-                                        $language,
-                                        Utils::getCurrentUrlWithLang($language),
+                                    <?= Html::a($language, Utils::getCurrentUrlWithLang($language),
                                         [
                                             'class' => Yii::$app->language === $language ?
                                                 'languages__item_underlined' : ''

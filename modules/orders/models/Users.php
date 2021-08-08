@@ -2,7 +2,8 @@
 
 namespace app\modules\orders\models;
 
-use Yii;
+use yii\db\ActiveRecord;
+use app\modules\orders\models\queries\UsersQuery;
 
 /**
  * This is the model class for table "users".
@@ -11,20 +12,20 @@ use Yii;
  * @property string $first_name
  * @property string $last_name
  */
-class Users extends \yii\db\ActiveRecord
+class Users extends ActiveRecord
 {
     /**
-     * {@inheritdoc}
+     * @return string
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'users';
     }
 
     /**
-     * {@inheritdoc}
+     * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['first_name', 'last_name'], 'required'],
@@ -33,9 +34,9 @@ class Users extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
+     * @return string[]
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -45,10 +46,9 @@ class Users extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     * @return UsersQuery the active query used by this AR class.
+     * @return UsersQuery
      */
-    public static function find()
+    public static function find(): UsersQuery
     {
         return new UsersQuery(get_called_class());
     }

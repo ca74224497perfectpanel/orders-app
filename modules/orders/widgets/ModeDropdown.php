@@ -18,7 +18,7 @@ class ModeDropdown extends Widget
     {
         return $this->render('mode-dropdown', [
             'orderModes' => Orders::getOrderModes(),
-            'mode' => Yii::$app->request->get('order-status')
+            'mode' => Yii::$app->request->get('mode')
         ]);
     }
 }

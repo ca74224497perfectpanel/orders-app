@@ -2,7 +2,8 @@
 
 namespace app\modules\orders\models;
 
-use Yii;
+use yii\db\ActiveRecord;
+use app\modules\orders\models\queries\ServicesQuery;
 
 /**
  * This is the model class for table "services".
@@ -10,20 +11,20 @@ use Yii;
  * @property int $id
  * @property string $name
  */
-class Services extends \yii\db\ActiveRecord
+class Services extends ActiveRecord
 {
     /**
-     * {@inheritdoc}
+     * @return string
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'services';
     }
 
     /**
-     * {@inheritdoc}
+     * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['name'], 'required'],
@@ -32,9 +33,9 @@ class Services extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
+     * @return string[]
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -43,10 +44,9 @@ class Services extends \yii\db\ActiveRecord
     }
 
     /**
-     * {@inheritdoc}
-     * @return ServicesQuery the active query used by this AR class.
+     * @return ServicesQuery
      */
-    public static function find()
+    public static function find(): ServicesQuery
     {
         return new ServicesQuery(get_called_class());
     }

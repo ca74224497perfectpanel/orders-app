@@ -24,7 +24,7 @@ use yii\helpers\Url;
             <?php else: ?>
                 <li>
             <?php endif; ?>
-                <a href="<?= Url::current(['service' => $item['id']], true); ?>">
+                <a href="<?= Url::current(['service_id' => $item['id']], true); ?>">
                     <?php if ((int)$item['id']): ?>
                         <span class="label-id">
                             <?= $item['count']; ?>

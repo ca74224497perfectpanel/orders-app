@@ -9,10 +9,10 @@
  * @var $domain string
  */
 
-$allOptionHref = "$domain/?order-status=all" .
-    (empty($search) ? '' : "&search=$search&search-type=$srtype");
+$allOptionHref = "$domain/?status=all" .
+    (empty($search) ? '' : "&search=$search&search_type=$srtype");
 $searchPartUrl = empty($search) ?
-    '' : "&search=$search&search-type=$srtype";
+    '' : "&search=$search&search_type=$srtype";
 ?>
 
 <ul class="nav nav-tabs p-b">
@@ -31,7 +31,7 @@ $searchPartUrl = empty($search) ?
         <?php else: ?>
             <li>
         <?php endif; ?>
-            <a href="<?= "$domain/?order-status=$statusId$searchPartUrl"; ?>">
+            <a href="<?= "$domain/?status=$statusId$searchPartUrl"; ?>">
                 <?= $statusLabel; ?>
             </a>
         </li>
@@ -48,11 +48,11 @@ $searchPartUrl = empty($search) ?
                        placeholder="<?= Yii::t('text', 'orders.search.placeholder'); ?>" />
                 <?php if (is_numeric($status)): ?>
                     <input type="hidden"
-                           name="order-status"
+                           name="status"
                            value="<?= $status; ?>" />
                 <?php endif; ?>
                 <span class="input-group-btn search-select-wrap">
-                    <select class="form-control search-select" name="search-type" />
+                    <select class="form-control search-select" name="search_type" />
                     <?php foreach ($searchTypes as $typeId => $typeLabel): ?>
                         <?php if ((int)$srtype === $typeId): ?>
                             <option value="<?= $typeId; ?>" selected>

@@ -17,7 +17,7 @@ class ServiceDropdown extends Widget
     {
         return $this->render('service-dropdown', [
             'countByServices' => Orders::getOrdersCountByServices(),
-            'service' => Yii::$app->request->get('service')
+            'service' => Yii::$app->request->get('service_id')
         ]);
     }
 }

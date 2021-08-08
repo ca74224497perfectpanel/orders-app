@@ -24,7 +24,7 @@ use yii\helpers\Url;
             <?php else: ?>
                 <li>
             <?php endif; ?>
-                <a href="<?= Url::current(['order-mode' => $modeId], true); ?>">
+                <a href="<?= Url::current(['mode' => $modeId], true); ?>">
                     <?= $modeLabel; ?>
                 </a>
             </li>

@@ -1,19 +1,17 @@
 <?php
 
-namespace app\modules\orders\models;
+namespace app\modules\orders\models\queries;
+
+use yii\db\ActiveQuery;
+use app\modules\orders\models\Orders;
 
 /**
  * This is the ActiveQuery class for [[Orders]].
  *
  * @see Orders
  */
-class OrdersQuery extends \yii\db\ActiveQuery
+class OrdersQuery extends ActiveQuery
 {
-    /*public function active()
-    {
-        return $this->andWhere('[[status]]=1');
-    }*/
-
     /**
      * {@inheritdoc}
      * @return Orders[]|array

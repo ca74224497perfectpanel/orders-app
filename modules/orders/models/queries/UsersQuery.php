@@ -1,19 +1,17 @@
 <?php
 
-namespace app\modules\orders\models;
+namespace app\modules\orders\models\queries;
+
+use yii\db\ActiveQuery;
+use app\modules\orders\models\Users;
 
 /**
  * This is the ActiveQuery class for [[Users]].
  *
  * @see Users
  */
-class UsersQuery extends \yii\db\ActiveQuery
+class UsersQuery extends ActiveQuery
 {
-    /*public function active()
-    {
-        return $this->andWhere('[[status]]=1');
-    }*/
-
     /**
      * {@inheritdoc}
      * @return Users[]|array

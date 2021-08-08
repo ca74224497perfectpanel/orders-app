@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUnhandledExceptionInspection */
 
 /* @var $dataProvider ActiveDataProvider */
 
@@ -6,6 +7,7 @@ use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii2tech\csvgrid\CsvGrid;
+use yii\data\ActiveDataProvider;
 use app\modules\orders\models\Orders;
 use app\modules\orders\widgets\GridControl;
 use app\modules\orders\widgets\ModeDropdown;
