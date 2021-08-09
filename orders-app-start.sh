@@ -3,7 +3,7 @@
 # Параметры по умолчанию
 name=application
 port=8080
-version=12 # Список доступных версий по ссылке: https://hub.docker.com/repository/docker/ca74224497/orders-app
+version=15 # Список доступных версий по ссылке: https://hub.docker.com/repository/docker/ca74224497/orders-app
 
 # Регулярное выражение для проверки числа
 numeric='^[0-9]+$'
@@ -79,7 +79,6 @@ echo 'Запуск контейнера...'
 docker run -dit \
            --name ${name} \
            -p ${port}:80 \
-           -v=/Users/mihail/web/test/www:/var/www/application \
            ca74224497/orders-app:v${version}
 
 echo "Контейнер был запущен со следующими параметрами: name=$name, port=$port, version=$version"
