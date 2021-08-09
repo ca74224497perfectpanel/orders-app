@@ -1,13 +1,13 @@
 <?php /** @noinspection PhpUnused */
 
-namespace app\modules\orders\controllers;
+namespace orders\controllers;
 
 use Yii;
 use yii\helpers\Url;
 use yii\web\Response;
 use yii\web\Controller;
 use yii\data\ActiveDataProvider;
-use app\modules\orders\models\search\OrdersSearch;
+use orders\models\search\OrdersSearch;
 
 /**
  * Default controller for the `orders` module

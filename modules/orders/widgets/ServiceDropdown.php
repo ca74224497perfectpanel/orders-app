@@ -1,10 +1,10 @@
 <?php
 
-namespace app\modules\orders\widgets;
+namespace orders\widgets;
 
 use Yii;
 use yii\base\Widget;
-use app\modules\orders\models\Orders;
+use orders\models\search\OrdersSearch;
 
 class ServiceDropdown extends Widget
 {
@@ -16,7 +16,7 @@ class ServiceDropdown extends Widget
     public function run(): string
     {
         return $this->render('service-dropdown', [
-            'countByServices' => Orders::getOrdersCountByServices(),
+            'countByServices' => OrdersSearch::getOrdersCountByServices(),
             'service' => Yii::$app->request->get('service_id')
         ]);
     }

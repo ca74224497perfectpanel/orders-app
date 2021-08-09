@@ -8,7 +8,7 @@ use yii\helpers\Url;
 use yii\helpers\Html;
 use app\assets\AppAsset;
 use app\assets\PolyfillsAsset;
-use app\modules\orders\helpers\Utils;
+use orders\helpers\Utils;
 
 AppAsset::register($this);
 PolyfillsAsset::register($this);

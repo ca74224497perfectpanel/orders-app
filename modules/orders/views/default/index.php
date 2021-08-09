@@ -3,15 +3,15 @@
 
 /* @var $dataProvider ActiveDataProvider */
 
+use orders\widgets\ModeDropdown;
 use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii2tech\csvgrid\CsvGrid;
 use yii\data\ActiveDataProvider;
-use app\modules\orders\models\Orders;
-use app\modules\orders\widgets\GridControl;
-use app\modules\orders\widgets\ModeDropdown;
-use app\modules\orders\widgets\ServiceDropdown;
+use orders\models\Orders;
+use orders\widgets\GridControl;
+use orders\widgets\ServiceDropdown;
 
 // Описание столбцов таблицы.
 $columns = [

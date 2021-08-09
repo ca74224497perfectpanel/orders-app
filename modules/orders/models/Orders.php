@@ -1,14 +1,12 @@
 <?php /** @noinspection PhpUnused */
 
-namespace app\modules\orders\models;
+namespace orders\models;
 
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
-use yii\db\Expression;
-use yii\db\Query;
-use app\modules\orders\models\queries\OrdersQuery;
 use yii\helpers\ArrayHelper;
+use orders\models\queries\OrdersQuery;
 
 /**
  * This is the model class for table "orders".
@@ -176,45 +174,5 @@ class Orders extends ActiveRecord
         return $this->hasOne(Services::class, [
             'id' => 'service_id'
         ]);
-    }
-
-    /**
-     * Получение количества заказов по сервисам + общее количество заказов.
-     * @return array
-     */
-    public static function getOrdersCountByServices(): array {
-        $key = 'services-stat';
-        $cache = Yii::$app->cache;
-        $expiration = Yii::$app->params['cache_expiration'];
-
-        // Получаем данные о статистике по сервисам из кэша.
-        $data = $cache->get($key);
-
-        if ($data === false /* в кэше нет данных */) {
-
-            // Запрашиваем данные из БД.
-            $byServicesQuery = (new Query())
-                ->select(['service_id AS id', 'COUNT(*) AS count'])
-                ->from('orders')
-                ->groupBy(['service_id']);
-
-            $totalQuery = (new Query())
-                ->select([new Expression(0), 'COUNT(*)'])
-                ->from('orders');
-
-            $byServicesQuery->union($totalQuery);
-
-            $data = (new Query())
-                ->select(['t1.id', 't1.count', 't2.name'])
-                ->from(['t1' => $byServicesQuery])
-                ->leftJoin('services AS t2', 't1.id = t2.id')
-                ->orderBy('t1.count DESC')
-                ->all();
-
-            // Заносим данные в кэш.
-            $cache->set($key, $data, $expiration);
-        }
-
-        return empty($data) ? [] : $data;
     }
 }

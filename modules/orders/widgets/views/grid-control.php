@@ -52,7 +52,7 @@ $searchPartUrl = empty($search) ?
                            value="<?= $status; ?>" />
                 <?php endif; ?>
                 <span class="input-group-btn search-select-wrap">
-                    <select class="form-control search-select" name="search_type" />
+                    <select class="form-control search-select" name="search_type">
                     <?php foreach ($searchTypes as $typeId => $typeLabel): ?>
                         <?php if ((int)$srtype === $typeId): ?>
                             <option value="<?= $typeId; ?>" selected>

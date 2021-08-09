@@ -1,9 +1,9 @@
 <?php
 
-namespace app\modules\orders\models;
+namespace orders\models;
 
 use yii\db\ActiveRecord;
-use app\modules\orders\models\queries\ServicesQuery;
+use orders\models\queries\ServicesQuery;
 
 /**
  * This is the model class for table "services".

@@ -1,9 +1,9 @@
 <?php
 
-namespace app\modules\orders\models\queries;
+namespace orders\models\queries;
 
 use yii\db\ActiveQuery;
-use app\modules\orders\models\Users;
+use orders\models\Users;
 
 /**
  * This is the ActiveQuery class for [[Users]].

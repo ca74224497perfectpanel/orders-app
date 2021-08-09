@@ -1,9 +1,12 @@
 <?php
 
-namespace app\modules\orders\models\search;
+namespace orders\models\search;
 
-use app\modules\orders\models\Orders;
-use app\modules\orders\models\queries\OrdersQuery;
+use Yii;
+use yii\db\Query;
+use yii\db\Expression;
+use orders\models\Orders;
+use orders\models\queries\OrdersQuery;
 
 class OrdersSearch
 {
@@ -87,5 +90,45 @@ class OrdersSearch
         $query->orderBy(['id' => SORT_DESC]);
 
         return $query;
+    }
+
+    /**
+     * Получение количества заказов по сервисам + общее количество заказов.
+     * @return array
+     */
+    public static function getOrdersCountByServices(): array {
+        $key = 'services-stat';
+        $cache = Yii::$app->cache;
+        $expiration = Yii::$app->params['cache_expiration'];
+
+        // Получаем данные о статистике по сервисам из кэша.
+        $data = $cache->get($key);
+
+        if ($data === false /* в кэше нет данных */) {
+
+            // Запрашиваем данные из БД.
+            $byServicesQuery = (new Query())
+                ->select(['service_id AS id', 'COUNT(*) AS count'])
+                ->from('orders')
+                ->groupBy(['service_id']);
+
+            $totalQuery = (new Query())
+                ->select([new Expression(0), 'COUNT(*)'])
+                ->from('orders');
+
+            $byServicesQuery->union($totalQuery);
+
+            $data = (new Query())
+                ->select(['t1.id', 't1.count', 't2.name'])
+                ->from(['t1' => $byServicesQuery])
+                ->leftJoin('services AS t2', 't1.id = t2.id')
+                ->orderBy('t1.count DESC')
+                ->all();
+
+            // Заносим данные в кэш.
+            $cache->set($key, $data, $expiration);
+        }
+
+        return empty($data) ? [] : $data;
     }
 }

@@ -1,9 +1,9 @@
 <?php
 
-namespace app\modules\orders\models\queries;
+namespace orders\models\queries;
 
 use yii\db\ActiveQuery;
-use app\modules\orders\models\Orders;
+use orders\models\Orders;
 
 /**
  * This is the ActiveQuery class for [[Orders]].

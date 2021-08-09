@@ -1,11 +1,11 @@
 <?php
 
-namespace app\modules\orders\widgets;
+namespace orders\widgets;
 
 use Yii;
 use yii\base\Widget;
 use yii\helpers\Url;
-use app\modules\orders\models\Orders;
+use orders\models\Orders;
 
 class GridControl extends Widget
 {

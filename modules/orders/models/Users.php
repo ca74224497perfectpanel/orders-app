@@ -1,9 +1,9 @@
 <?php
 
-namespace app\modules\orders\models;
+namespace orders\models;
 
 use yii\db\ActiveRecord;
-use app\modules\orders\models\queries\UsersQuery;
+use orders\models\queries\UsersQuery;
 
 /**
  * This is the model class for table "users".
