@@ -1,4 +1,5 @@
-<?php /** @noinspection PhpUnused */
+<?php
+/** @noinspection PhpUnused */
 
 namespace orders\controllers;
 
@@ -25,7 +26,9 @@ class DefaultController extends Controller
         $cache = Yii::$app->cache;
         $expiration = Yii::$app->params['cache_expiration'];
 
-        if (($dataProvider = $cache->get($key)) === false /* в кэше нет данных */) {
+        if (($dataProvider = $cache->get(
+                $key
+            )) === false /* в кэше нет данных */) {
             $orderSearch = new OrdersSearch(
                 Yii::$app->request->get()
             );
@@ -52,7 +55,8 @@ class DefaultController extends Controller
      * Редирект на главную / предыдущую страницу модуля при ошибке запроса.
      * @return Response
      */
-    public function actionError(): Response {
+    public function actionError(): Response
+    {
         return $this->redirect(Yii::$app->homeUrl);
     }
 }

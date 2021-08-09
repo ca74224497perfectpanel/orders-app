@@ -2,9 +2,9 @@
 
 namespace orders\widgets;
 
-use orders\models\Orders;
 use Yii;
 use yii\base\Widget;
+use orders\models\Orders;
 
 class ModeDropdown extends Widget
 {

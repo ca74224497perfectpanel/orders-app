@@ -27,3 +27,4 @@ class AppAsset extends AssetBundle
         'js/bootstrap.min.js'
     ];
 }
+

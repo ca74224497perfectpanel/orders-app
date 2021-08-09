@@ -73,13 +73,9 @@ class OrdersSearch
                     $search->andWhere(['like', 'link', $search]);
                     break;
                 case Orders::SEARCH_TYPE_USER_NAME:
-                    $query
-                        ->joinWith('user')
-                        ->andWhere([
-                            'like',
-                            "CONCAT(first_name, ' ', last_name)",
-                            $search
-                        ]);
+                    $query->joinWith('user')->andWhere(
+                        ['like', "CONCAT(first_name, ' ', last_name)", $search]
+                    );
                     break;
             }
         }
@@ -96,7 +92,8 @@ class OrdersSearch
      * Получение количества заказов по сервисам + общее количество заказов.
      * @return array
      */
-    public static function getOrdersCountByServices(): array {
+    public static function getOrdersCountByServices(): array
+    {
         $key = 'services-stat';
         $cache = Yii::$app->cache;
         $expiration = Yii::$app->params['cache_expiration'];
@@ -105,7 +102,6 @@ class OrdersSearch
         $data = $cache->get($key);
 
         if ($data === false /* в кэше нет данных */) {
-
             // Запрашиваем данные из БД.
             $byServicesQuery = (new Query())
                 ->select(['service_id AS id', 'COUNT(*) AS count'])

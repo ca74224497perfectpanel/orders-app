@@ -19,8 +19,7 @@ $columns = [
     [
         'attribute' => 'user_id',
         'value' => function ($item) {
-            return $item->user->first_name . ' ' .
-                   $item->user->last_name;
+            return "{$item->user->first_name} {$item->user->last_name}";
         }
     ],
     [
@@ -57,15 +56,20 @@ $columns = [
         'attribute' => 'created_at',
         'format' => 'html',
         'value' => function ($item) {
-            return '<span class="nowrap">' . date('Y-m-d', $item->created_at) . '</span>' .
-                   '<span class="nowrap">' . date('H:i:s', $item->created_at) . '</span>';
+            return '<span class="nowrap">' . date(
+                    'Y-m-d',
+                    $item->created_at
+                ) . '</span>' .
+                '<span class="nowrap">' . date(
+                    'H:i:s',
+                    $item->created_at
+                ) . '</span>';
         }
     ]
 ];
 
 /* Отдаем CSV-файл по запросу */
 if (Yii::$app->request->get('get-csv')) {
-
     // Редактируем колонки для репрезентации в csv-формате.
 
     $columns[2] = ['attribute' => 'link'];
@@ -83,16 +87,15 @@ if (Yii::$app->request->get('get-csv')) {
         'attribute' => 'created_at',
         'value' => function ($item) {
             return date('Y-m-d', $item->created_at) . PHP_EOL .
-                   date('H:i:s', $item->created_at);
+                date('H:i:s', $item->created_at);
         }
     ];
 
     $exporter = new CsvGrid([
-        'dataProvider' => $dataProvider,
-        'columns' => $columns
-    ]);
+                                'dataProvider' => $dataProvider,
+                                'columns' => $columns
+                            ]);
     $exporter->export()->send('orders.csv');
-
 }
 ?>
 <div class="container-fluid">
@@ -101,13 +104,13 @@ if (Yii::$app->request->get('get-csv')) {
 
     <!--Таблица с данными-->
     <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'summary' => Yii::t('text', 'orders.grid.summary'),
-        'summaryOptions' => ['class' => 'table-summary'],
-        'columns' => $columns,
-        'tableOptions' => ['class' => 'table order-table'],
-        'layout' => '{items}{pager}{summary}'
-     ]); ?>
+                             'dataProvider' => $dataProvider,
+                             'summary' => Yii::t('text', 'orders.grid.summary'),
+                             'summaryOptions' => ['class' => 'table-summary'],
+                             'columns' => $columns,
+                             'tableOptions' => ['class' => 'table order-table'],
+                             'layout' => '{items}{pager}{summary}'
+                         ]); ?>
 
     <!--Ссылка на скачивание CSV-файла заказов-->
     <div class="csv-download">

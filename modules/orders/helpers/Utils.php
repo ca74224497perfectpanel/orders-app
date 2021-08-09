@@ -33,14 +33,14 @@ class Utils
 
     /**
      * Формирует текущий URL с указанием языковой настройки.
-     * @param string $language
+     * @param string $lang
      * @return string
      */
-    public static function getCurrentUrlWithLang(string $language = 'en'): string
+    public static function getCurrentUrlWithLang(string $lang = 'en'): string
     {
         $params = Yii::$app->request->queryString;
 
         return Url::base(true) . DIRECTORY_SEPARATOR .
-            $language . (empty($params) ? '' : '?') . $params;
+            $lang . (empty($params) ? '' : '?') . $params;
     }
 }
