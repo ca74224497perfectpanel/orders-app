@@ -70,7 +70,7 @@ class OrdersSearch
                     $query->andWhere(['id' => $search]);
                     break;
                 case Orders::SEARCH_TYPE_LINK:
-                    $search->andWhere(['like', 'link', $search]);
+                    $query->andWhere(['like', 'link', $search]);
                     break;
                 case Orders::SEARCH_TYPE_USER_NAME:
                     $query->joinWith('user')->andWhere(
