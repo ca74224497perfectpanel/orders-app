@@ -6,9 +6,9 @@ use Yii;
 use yii\db\Query;
 use yii\db\Expression;
 use orders\models\Orders;
-use orders\models\queries\OrdersQuery;
+use yii\data\ActiveDataProvider;
 
-class OrdersSearch
+class OrdersSearch implements IOrdersSearch
 {
     /**
      * @var Orders
@@ -17,25 +17,27 @@ class OrdersSearch
 
     /**
      * Конструктор класса.
-     * @param array $queryParams
+     * @param $queryParams
      */
-    public function __construct(array $queryParams = [])
+    public function __construct($queryParams)
     {
-        $this->model = new Orders();
-        $this->model->scenario = Orders::SCENARIO_SEARCH;
-        $this->model->load($queryParams, '');
-
-        if (!$this->model->validate()) {
-            // Валидация провалилась, сбрасываем значения полей.
+        if (!is_null($queryParams)) {
             $this->model = new Orders();
+            $this->model->scenario = Orders::SCENARIO_SEARCH;
+            $this->model->load($queryParams, '');
+
+            if (!$this->model->validate()) {
+                // Валидация провалилась, сбрасываем значения полей.
+                $this->model = new Orders();
+            }
         }
     }
 
     /**
-     * Возвращает сформированный запрос.
-     * @return OrdersQuery
+     * Возвращает результат поиска по заказам.
+     * @return ActiveDataProvider
      */
-    public function getQuery(): OrdersQuery
+    public function getData(): ActiveDataProvider
     {
         $query = $this->model::find();
 
@@ -62,7 +64,7 @@ class OrdersSearch
         }
 
         /**
-         * Поиск.
+         * Поиск по ID заказа, ссылке или имени пользователя.
          */
         if (!is_null($search = $this->model->attributes['search'])) {
             switch ($this->model->attributes['search_type']) {
@@ -85,45 +87,40 @@ class OrdersSearch
          */
         $query->orderBy(['id' => SORT_DESC]);
 
-        return $query;
+        $adpParams = [
+            'query' => $query,
+            'pagination' => [
+                'pageSize' => Yii::$app->params['orders_per_page']
+            ]
+        ];
+
+        return new ActiveDataProvider($adpParams);
     }
 
     /**
      * Получение количества заказов по сервисам + общее количество заказов.
      * @return array
      */
-    public static function getOrdersCountByServices(): array
+    public function getOrdersCountByServices(): array
     {
-        $key = 'services-stat';
-        $cache = Yii::$app->cache;
-        $expiration = Yii::$app->params['cache_expiration'];
+        // Запрашиваем данные из БД.
+        $byServicesQuery = (new Query())
+            ->select(['service_id AS id', 'COUNT(*) AS count'])
+            ->from('orders')
+            ->groupBy(['service_id']);
 
-        // Получаем данные о статистике по сервисам из кэша.
-        $data = $cache->get($key);
+        $totalQuery = (new Query())
+            ->select([new Expression(0), 'COUNT(*)'])
+            ->from('orders');
 
-        if ($data === false /* в кэше нет данных */) {
-            // Запрашиваем данные из БД.
-            $byServicesQuery = (new Query())
-                ->select(['service_id AS id', 'COUNT(*) AS count'])
-                ->from('orders')
-                ->groupBy(['service_id']);
+        $byServicesQuery->union($totalQuery);
 
-            $totalQuery = (new Query())
-                ->select([new Expression(0), 'COUNT(*)'])
-                ->from('orders');
-
-            $byServicesQuery->union($totalQuery);
-
-            $data = (new Query())
-                ->select(['t1.id', 't1.count', 't2.name'])
-                ->from(['t1' => $byServicesQuery])
-                ->leftJoin('services AS t2', 't1.id = t2.id')
-                ->orderBy('t1.count DESC')
-                ->all();
-
-            // Заносим данные в кэш.
-            $cache->set($key, $data, $expiration);
-        }
+        $data = (new Query())
+            ->select(['t1.id', 't1.count', 't2.name'])
+            ->from(['t1' => $byServicesQuery])
+            ->leftJoin('services AS t2', 't1.id = t2.id')
+            ->orderBy('t1.count DESC')
+            ->all();
 
         return empty($data) ? [] : $data;
     }

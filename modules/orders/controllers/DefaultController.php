@@ -4,10 +4,9 @@
 namespace orders\controllers;
 
 use Yii;
-use yii\helpers\Url;
 use yii\web\Response;
 use yii\web\Controller;
-use yii\data\ActiveDataProvider;
+use orders\models\search\Cache;
 use orders\models\search\OrdersSearch;
 
 /**
@@ -21,33 +20,12 @@ class DefaultController extends Controller
      */
     public function actionIndex(): string
     {
-        $currentUrl = Url::current();
-        $key = "page:$currentUrl:cache";
-        $cache = Yii::$app->cache;
-        $expiration = Yii::$app->params['cache_expiration'];
-
-        if (($dataProvider = $cache->get(
-                $key
-            )) === false /* в кэше нет данных */) {
-            $orderSearch = new OrdersSearch(
-                Yii::$app->request->get()
-            );
-
-            $adpParams = [
-                'query' => $orderSearch->getQuery(),
-                'pagination' => [
-                    'pageSize' => Yii::$app->params['orders_per_page']
-                ]
-            ];
-
-            $dataProvider = new ActiveDataProvider($adpParams);
-
-            // Заносим в кэш.
-            $cache->set($key, $dataProvider, $expiration);
-        }
+        $orderSearch = new Cache(
+            new OrdersSearch(Yii::$app->request->get())
+        );
 
         return $this->render('index', [
-            'dataProvider' => $dataProvider
+            'dataProvider' => $orderSearch->getData()
         ]);
     }
 
