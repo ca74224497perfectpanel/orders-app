@@ -134,7 +134,7 @@ class Orders extends ActiveRecord
     {
         return [
             [
-                ['status', 'mode', 'service_id', 'search_type'],
+                ['mode', 'service_id', 'search_type'],
                 'integer',
                 'skipOnEmpty' => true,
                 'on' => self::SCENARIO_SEARCH
@@ -142,7 +142,10 @@ class Orders extends ActiveRecord
             [
                 'status',
                 'in',
-                'range' => array_keys(self::getOrderStatuses()),
+                'range' => ArrayHelper::merge(
+                    array_keys(self::getOrderStatuses()),
+                    ['all']
+                ),
                 'skipOnEmpty' => true,
                 'on' => self::SCENARIO_SEARCH
             ],
