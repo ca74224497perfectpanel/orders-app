@@ -2,7 +2,6 @@
 
 namespace orders\widgets;
 
-use orders\models\search\Cache;
 use Yii;
 use yii\base\Widget;
 use orders\models\search\OrdersSearch;
@@ -16,9 +15,7 @@ class ServiceDropdown extends Widget
 
     public function run(): string
     {
-        $orderSearch = new Cache(
-            new OrdersSearch(Yii::$app->request->get())
-        );
+        $orderSearch = new OrdersSearch(Yii::$app->request->get());
 
         return $this->render('service-dropdown', [
             'countByServices' => $orderSearch->getOrdersCountByServices(),
