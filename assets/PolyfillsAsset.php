@@ -7,6 +7,7 @@
 
 namespace app\assets;
 
+use yii\web\View;
 use yii\web\AssetBundle;
 
 /**
@@ -18,7 +19,7 @@ class PolyfillsAsset extends AssetBundle
     public $baseUrl = '@web';
     public $jsOptions = [
         'condition' => 'lte IE9',
-        'position' => \yii\web\View::POS_HEAD
+        'position' => View::POS_HEAD
     ];
     public $js = [
         'https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js',

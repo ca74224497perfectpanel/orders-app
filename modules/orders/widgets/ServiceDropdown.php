@@ -16,7 +16,7 @@ class ServiceDropdown extends Widget
 
     public function run(): string
     {
-        $orderSearch = new Cache(new OrdersSearch(null));
+        $orderSearch = new Cache(new OrdersSearch());
 
         return $this->render('service-dropdown', [
             'countByServices' => $orderSearch->getOrdersCountByServices(),

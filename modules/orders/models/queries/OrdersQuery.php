@@ -30,4 +30,3 @@ class OrdersQuery extends ActiveQuery
         return parent::one($db);
     }
 }
-

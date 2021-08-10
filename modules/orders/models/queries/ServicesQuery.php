@@ -30,4 +30,3 @@ class ServicesQuery extends ActiveQuery
         return parent::one($db);
     }
 }
-

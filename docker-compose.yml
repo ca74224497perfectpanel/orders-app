@@ -1,0 +1,17 @@
+version: '3.9'
+services:
+  web:
+    image: '${CONTAINER_IMAGE}:v${CONTAINER_VERSION}'
+    container_name: ${CONTAINER_NAME}
+    restart: on-failure
+    tty: true
+    env_file:
+      - .env
+    environment:
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASS=${DATABASE_PASS}
+    ports:
+      - "${CONTAINER_ACCESS_PORT}:80"

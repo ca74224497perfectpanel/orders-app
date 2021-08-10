@@ -17,19 +17,21 @@ class OrdersSearch implements IOrdersSearch
 
     /**
      * Конструктор класса.
-     * @param $queryParams
+     * @param null $queryParams
      */
-    public function __construct($queryParams)
+    public function __construct($queryParams = null)
     {
-        if (!is_null($queryParams)) {
-            $this->model = new Orders();
-            $this->model->scenario = Orders::SCENARIO_SEARCH;
-            $this->model->load($queryParams, '');
+        if (is_null($queryParams)) {
+            return;
+        }
 
-            if (!$this->model->validate()) {
-                // Валидация провалилась, сбрасываем значения полей.
-                $this->model = new Orders();
-            }
+        /* Требуется валидация модели */
+        $this->model = new Orders();
+        $this->model->scenario = Orders::SCENARIO_SEARCH;
+        $this->model->load($queryParams, '');
+
+        if (!$this->model->validate()) {
+            $this->model = new Orders();
         }
     }
 
