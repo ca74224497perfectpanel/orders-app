@@ -11,25 +11,29 @@ use yii\data\ActiveDataProvider;
 class OrdersSearch implements IOrdersSearch
 {
     /**
+     * Тип поиска.
+     */
+    public const SEARCH_TYPE_ORDER_ID = 1;
+    public const SEARCH_TYPE_LINK = 2;
+    public const SEARCH_TYPE_USER_NAME = 3;
+
+    /**
      * @var Orders
      */
     private Orders $model;
 
     /**
      * Конструктор класса.
-     * @param null $queryParams
+     * @param array $queryParams
      */
-    public function __construct($queryParams = null)
+    public function __construct(array $queryParams = [])
     {
-        if (is_null($queryParams)) {
-            return;
-        }
-
-        /* Требуется валидация модели */
         $this->model = new Orders();
         $this->model->scenario = Orders::SCENARIO_SEARCH;
-        $this->model->load($queryParams, '');
+        $this->model->load($queryParams, ''); // Массовое присвоение
 
+        // Проверяем входные данные
+        // (сбрасываем значения при неудачной валидации)
         if (!$this->model->validate()) {
             $this->model = new Orders();
         }
@@ -46,7 +50,9 @@ class OrdersSearch implements IOrdersSearch
         /**
          * Фильтрация по статусу заказа.
          */
-        if (!is_null($status = $this->model->attributes['status'])) {
+        if (!is_null(
+                $status = $this->model->attributes['status']
+            ) && is_numeric($status)) {
             $query->andWhere(['status' => $status]);
         }
 
@@ -68,15 +74,18 @@ class OrdersSearch implements IOrdersSearch
         /**
          * Поиск по ID заказа, ссылке или имени пользователя.
          */
-        if (!is_null($search = $this->model->attributes['search'])) {
+        if (!is_null($search = $this->model->attributes['search']) && strlen(
+                $search
+            )) {
+            $search = trim($search);
             switch ($this->model->attributes['search_type']) {
-                case Orders::SEARCH_TYPE_ORDER_ID:
+                case self::SEARCH_TYPE_ORDER_ID:
                     $query->andWhere(['id' => $search]);
                     break;
-                case Orders::SEARCH_TYPE_LINK:
+                case self::SEARCH_TYPE_LINK:
                     $query->andWhere(['like', 'link', $search]);
                     break;
-                case Orders::SEARCH_TYPE_USER_NAME:
+                case self::SEARCH_TYPE_USER_NAME:
                     $query->joinWith('user')->andWhere(
                         ['like', "CONCAT(first_name, ' ', last_name)", $search]
                     );
@@ -91,6 +100,7 @@ class OrdersSearch implements IOrdersSearch
 
         $adpParams = [
             'query' => $query,
+            'sort' => false,
             'pagination' => [
                 'pageSize' => Yii::$app->params['orders_per_page']
             ]
@@ -115,6 +125,22 @@ class OrdersSearch implements IOrdersSearch
             ->select([new Expression(0), 'COUNT(*)'])
             ->from('orders');
 
+        // Фильтрация по режиму
+        if (!is_null(
+                $mode = $this->model->attributes['mode']
+            ) && (int)$mode !== Orders::MODE_ALL) {
+            $byServicesQuery->andWhere(['mode' => $mode]);
+            $totalQuery->andWhere(['mode' => $mode]);
+        }
+
+        // Фильтрация по статусу
+        if (!is_null(
+                $status = $this->model->attributes['status']
+            ) && is_numeric($status)) {
+            $byServicesQuery->andWhere(['status' => $status]);
+            $totalQuery->andWhere(['status' => $status]);
+        }
+
         $byServicesQuery->union($totalQuery);
 
         $data = (new Query())
@@ -125,5 +151,24 @@ class OrdersSearch implements IOrdersSearch
             ->all();
 
         return empty($data) ? [] : $data;
+    }
+
+    /**
+     * Получение списка типов поиска.
+     * @return int[]
+     */
+    public static function getSearchTypes(): array
+    {
+        return [
+            self::SEARCH_TYPE_ORDER_ID => Yii::t(
+                'text',
+                'orders.search.type.id'
+            ),
+            self::SEARCH_TYPE_LINK => Yii::t('text', 'orders.search.type.link'),
+            self::SEARCH_TYPE_USER_NAME => Yii::t(
+                'text',
+                'orders.search.type.username'
+            )
+        ];
     }
 }

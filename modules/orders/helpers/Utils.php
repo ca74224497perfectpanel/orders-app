@@ -43,4 +43,13 @@ class Utils
         return Url::base(true) . DIRECTORY_SEPARATOR .
             $lang . (empty($params) ? '' : '?') . $params;
     }
+
+    /**
+     * Генерация имени для csv-файла.
+     * @return string
+     */
+    public static function generateCsvFileName(string $prefix = 'orders'
+    ): string {
+        return $prefix . '_' . date('Ymd') . '.csv';
+    }
 }

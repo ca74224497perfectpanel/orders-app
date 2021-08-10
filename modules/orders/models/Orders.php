@@ -3,6 +3,7 @@
 
 namespace orders\models;
 
+use orders\models\search\OrdersSearch;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -23,13 +24,6 @@ use orders\models\queries\OrdersQuery;
  */
 class Orders extends ActiveRecord
 {
-    /**
-     * Тип поиска.
-     */
-    public const SEARCH_TYPE_ORDER_ID = 1;
-    public const SEARCH_TYPE_LINK = 2;
-    public const SEARCH_TYPE_USER_NAME = 3;
-
     /**
      * Режим заказа.
      */
@@ -70,34 +64,15 @@ class Orders extends ActiveRecord
     }
 
     /**
-     * Получение списка типов поиска.
-     * @return int[]
-     */
-    public static function getSearchTypes(): array
-    {
-        return [
-            self::SEARCH_TYPE_ORDER_ID => Yii::t(
-                'text',
-                'orders.search.type.id'
-            ),
-            self::SEARCH_TYPE_LINK => Yii::t('text', 'orders.search.type.link'),
-            self::SEARCH_TYPE_USER_NAME => Yii::t(
-                'text',
-                'orders.search.type.username'
-            )
-        ];
-    }
-
-    /**
      * Получение списка режимов заказа.
      * @return array
      */
     public static function getOrderModes(): array
     {
         return [
-            self::MODE_MANUAL => Yii::t('text', 'orders.mode.manual'),
+            self::MODE_ALL => Yii::t('text', 'orders.mode.all'),
             self::MODE_AUTO => Yii::t('text', 'orders.mode.auto'),
-            self::MODE_ALL => Yii::t('text', 'orders.mode.all')
+            self::MODE_MANUAL => Yii::t('text', 'orders.mode.manual')
         ];
     }
 
@@ -117,6 +92,26 @@ class Orders extends ActiveRecord
             self::STATUS_CANCELED => Yii::t('text', 'orders.status.canceled'),
             self::STATUS_FAIL => Yii::t('text', 'orders.status.fail')
         ];
+    }
+
+    /**
+     * Возвращает текстовое описание для указанного статуса.
+     * @param int $id
+     * @return string
+     */
+    public static function getStatusLabelById(int $id): string
+    {
+        return self::getOrderStatuses()[$id];
+    }
+
+    /**
+     * Возвращает текстовое описание для указанного режима.
+     * @param int $id
+     * @return string
+     */
+    public static function getModeLabelById(int $id): string
+    {
+        return self::getOrderModes()[$id];
     }
 
     /**
@@ -159,7 +154,7 @@ class Orders extends ActiveRecord
             [
                 'search_type',
                 'in',
-                'range' => array_keys(self::getSearchTypes()),
+                'range' => array_keys(OrdersSearch::getSearchTypes()),
                 'skipOnEmpty' => true,
                 'on' => self::SCENARIO_SEARCH
             ],

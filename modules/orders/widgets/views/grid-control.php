@@ -9,8 +9,6 @@
  * @var $domain string
  */
 
-$allOptionHref = "$domain/?status=all" .
-    (empty($search) ? '' : "&search=$search&search_type=$srtype");
 $searchPartUrl = empty($search) ?
     '' : "&search=$search&search_type=$srtype";
 ?>
@@ -21,7 +19,7 @@ $searchPartUrl = empty($search) ?
     <?php else: ?>
         <li class="active">
     <?php endif; ?>
-        <a href="<?= $allOptionHref; ?>">
+        <a href="<?= "$domain/?status=all"; ?>">
             <?= Yii::t('text', 'orders.status.all'); ?>
         </a>
     </li>

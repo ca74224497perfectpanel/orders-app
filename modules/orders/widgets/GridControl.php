@@ -2,6 +2,7 @@
 
 namespace orders\widgets;
 
+use orders\models\search\OrdersSearch;
 use Yii;
 use yii\base\Widget;
 use yii\helpers\Url;
@@ -24,7 +25,7 @@ class GridControl extends Widget
     {
         return $this->render('grid-control', [
             'orderStatuses' => $this->orderStatuses,
-            'searchTypes' => Orders::getSearchTypes(),
+            'searchTypes' => OrdersSearch::getSearchTypes(),
             'status' => Yii::$app->request->get('status'),
             'search' => Yii::$app->request->get('search'),
             'srtype' => Yii::$app->request->get('search_type'),
