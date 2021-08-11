@@ -11,19 +11,6 @@ use yii\data\ActiveDataProvider;
 use orders\widgets\ModeDropdown;
 use orders\widgets\ServiceDropdown;
 
-interface IOrdersSearch
-{
-    /**
-     * @return ActiveDataProvider
-     */
-    public function getData(): ActiveDataProvider;
-
-    /**
-     * @return array
-     */
-    public function getOrdersCountByServices(): array;
-}
-
 class OrdersSearch implements IOrdersSearch
 {
     /**
