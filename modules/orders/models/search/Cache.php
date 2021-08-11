@@ -8,23 +8,35 @@ use yii\data\ActiveDataProvider;
 
 class Cache extends OrdersSearchDecorator
 {
+    private string $cacheKey;
+    private int $cacheExpiration;
+
+    /**
+     * Конструктор.
+     * @param IOrdersSearch $component
+     */
+    public function __construct(IOrdersSearch $component)
+    {
+        $this->cacheKey = 'page:' . Url::current() . ':cache';
+        $this->cacheExpiration = Yii::$app->params['cache_expiration'];
+
+        parent::__construct($component);
+    }
+
     /**
      * Добавление кэша для метода "getData".
      * @return ActiveDataProvider
      */
     public function getData(): ActiveDataProvider
     {
-        $currentUrl = Url::current();
-        $key = "page:$currentUrl:cache";
         $cache = Yii::$app->cache;
-        $expiration = Yii::$app->params['cache_expiration'];
 
-        if (($dataProvider = $cache->get($key)) === false) {
+        if (($dataProvider = $cache->get($this->cacheKey)) === false) {
             // В кэше нет данных
             $dataProvider = parent::getData();
 
             // Заносим в кэш.
-            $cache->set($key, $dataProvider, $expiration);
+            $cache->set($this->cacheKey, $dataProvider, $this->cacheExpiration);
         }
 
         return $dataProvider;
@@ -36,16 +48,14 @@ class Cache extends OrdersSearchDecorator
      */
     public function getOrdersCountByServices(): array
     {
-        $key = 'services-stat';
         $cache = Yii::$app->cache;
-        $expiration = Yii::$app->params['cache_expiration'];
 
-        if (($data = $cache->get($key)) === false) {
+        if (($data = $cache->get($this->cacheKey)) === false) {
             // В кэше нет данных
             $data = parent::getOrdersCountByServices();
 
             // Заносим в кэш.
-            $cache->set($key, $data, $expiration);
+            $cache->set($this->cacheKey, $data, $this->cacheExpiration);
         }
 
         return $data;

@@ -3,7 +3,7 @@
 # Параметры по умолчанию
 name=application
 port=5959
-version=20 # Список доступных версий по ссылке: https://hub.docker.com/repository/docker/ca74224497/orders-app
+version=21 # Список доступных версий по ссылке: https://hub.docker.com/repository/docker/ca74224497/orders-app
 
 # Регулярное выражение для проверки числа
 numeric='^[0-9]+$'

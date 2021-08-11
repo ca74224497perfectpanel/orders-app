@@ -3,10 +3,26 @@
 namespace orders\models\search;
 
 use Yii;
+use Exception;
 use yii\db\Query;
-use yii\db\Expression;
 use orders\models\Orders;
+use yii\helpers\ArrayHelper;
 use yii\data\ActiveDataProvider;
+use orders\widgets\ModeDropdown;
+use orders\widgets\ServiceDropdown;
+
+interface IOrdersSearch
+{
+    /**
+     * @return ActiveDataProvider
+     */
+    public function getData(): ActiveDataProvider;
+
+    /**
+     * @return array
+     */
+    public function getOrdersCountByServices(): array;
+}
 
 class OrdersSearch implements IOrdersSearch
 {
@@ -47,51 +63,10 @@ class OrdersSearch implements IOrdersSearch
     {
         $query = $this->model::find();
 
-        /**
-         * Фильтрация по статусу заказа.
-         */
-        if (!is_null(
-                $status = $this->model->attributes['status']
-            ) && is_numeric($status)) {
-            $query->andWhere(['status' => $status]);
-        }
-
-        /**
-         * Фильтрация по режиму.
-         */
-        if (!is_null($mode = $this->model->attributes['mode']) &&
-            (int)$mode !== Orders::MODE_ALL) {
-            $query->andWhere(['mode' => $mode]);
-        }
-
-        /**
-         * Фильтрация по сервису.
-         */
-        if (!is_null($service = $this->model->attributes['service_id'])) {
-            $query->andWhere(['service_id' => $service]);
-        }
-
-        /**
-         * Поиск по ID заказа, ссылке или имени пользователя.
-         */
-        if (!is_null($search = $this->model->attributes['search']) && strlen(
-                $search
-            )) {
-            $search = trim($search);
-            switch ($this->model->attributes['search_type']) {
-                case self::SEARCH_TYPE_ORDER_ID:
-                    $query->andWhere(['id' => $search]);
-                    break;
-                case self::SEARCH_TYPE_LINK:
-                    $query->andWhere(['like', 'link', $search]);
-                    break;
-                case self::SEARCH_TYPE_USER_NAME:
-                    $query->joinWith('user')->andWhere(
-                        ['like', "CONCAT(first_name, ' ', last_name)", $search]
-                    );
-                    break;
-            }
-        }
+        $query = $this->queryFilter(
+            ['mode', 'status', 'search', 'service'],
+            $query
+        );
 
         /**
          * Сортировка заказов по "id" в обратном порядке.
@@ -121,27 +96,10 @@ class OrdersSearch implements IOrdersSearch
             ->from('orders')
             ->groupBy(['service_id']);
 
-        $totalQuery = (new Query())
-            ->select([new Expression(0), 'COUNT(*)'])
-            ->from('orders');
-
-        // Фильтрация по режиму
-        if (!is_null(
-                $mode = $this->model->attributes['mode']
-            ) && (int)$mode !== Orders::MODE_ALL) {
-            $byServicesQuery->andWhere(['mode' => $mode]);
-            $totalQuery->andWhere(['mode' => $mode]);
-        }
-
-        // Фильтрация по статусу
-        if (!is_null(
-                $status = $this->model->attributes['status']
-            ) && is_numeric($status)) {
-            $byServicesQuery->andWhere(['status' => $status]);
-            $totalQuery->andWhere(['status' => $status]);
-        }
-
-        $byServicesQuery->union($totalQuery);
+        $byServicesQuery = $this->queryFilter(
+            ['mode', 'status', 'search'],
+            $byServicesQuery
+        );
 
         $data = (new Query())
             ->select(['t1.id', 't1.count', 't2.name'])
@@ -150,7 +108,71 @@ class OrdersSearch implements IOrdersSearch
             ->orderBy('t1.count DESC')
             ->all();
 
+        // Добавляем строку "total" в результирующий набор.
+        $total = array_reduce(
+            $data, fn($carry, $item) => $carry += $item['count']
+        );
+        $data = ArrayHelper::merge(
+            [['id' => 0, 'count' => $total]],
+            $data
+        );
+
         return empty($data) ? [] : $data;
+    }
+
+    /**
+     * Применение фильтра к запросу.
+     * @param array $input
+     * @param Query $query
+     * @return Query
+     */
+    public function queryFilter(array $input, Query $query): Query
+    {
+        // Фильтрация по режиму
+        if (in_array('mode', $input) && !is_null(
+                $mode = $this->model->attributes['mode']
+            ) && (int)$mode !== Orders::MODE_ALL) {
+            $query->andWhere(['mode' => $mode]);
+        }
+
+        // Фильтрация по статусу
+        if (in_array('status', $input) && !is_null(
+                $status = $this->model->attributes['status']
+            ) && is_numeric($status)) {
+            $query->andWhere(['status' => $status]);
+        }
+
+        // Фильтрация по сервису
+        if (in_array('service', $input) && !is_null(
+                $service = $this->model->attributes['service_id']
+            )) {
+            $query->andWhere(['service_id' => $service]);
+        }
+
+        // Фильтрация по поиску
+        if (in_array('search', $input) && !is_null(
+                $search = $this->model->attributes['search']
+            ) && strlen($search)) {
+            $search = trim($search);
+            switch ($this->model->attributes['search_type']) {
+                case self::SEARCH_TYPE_ORDER_ID:
+                    $query->andWhere(['id' => $search]);
+                    break;
+                case self::SEARCH_TYPE_LINK:
+                    $query->andWhere(['like', 'link', $search]);
+                    break;
+                case self::SEARCH_TYPE_USER_NAME:
+                    $query->leftJoin(
+                        'users',
+                        'users.id = orders.user_id'
+                    )->andWhere(
+                        ['like', "CONCAT(first_name, ' ', last_name)", $search]
+                    );
+                    break;
+            }
+        }
+
+        return $query;
     }
 
     /**
@@ -170,5 +192,90 @@ class OrdersSearch implements IOrdersSearch
                 'orders.search.type.username'
             )
         ];
+    }
+
+    /**
+     * Возвращает определение колонок дял таблицы поиска результатов.
+     * @param false $isCsv
+     * @return array
+     * @throws Exception
+     */
+    public function getColumnsDefinition(bool $isCsv = false): array
+    {
+        $dateYmd = fn($d) => date('Y-m-d', $d);
+        $dateHis = fn($d) => date('H:i:s', $d);
+
+        $columns = [
+            'id',
+            [
+                'attribute' => 'user_id',
+                'value' => function ($item) {
+                    return "{$item->user->first_name} {$item->user->last_name}";
+                }
+            ],
+            [
+                'attribute' => 'link',
+                'contentOptions' => ['class' => 'link']
+            ],
+            'quantity',
+            [
+                'header' => ServiceDropdown::widget(),
+                'attribute' => 'service_id',
+                'contentOptions' => ['class' => 'service'],
+                'headerOptions' => ['class' => 'dropdown-th'],
+                'format' => 'html',
+                'value' => function ($item) {
+                    return "<span class='label-id'>{$item->service->id}</span> 
+                        {$item->service->name}";
+                }
+            ],
+            [
+                'attribute' => 'status',
+                'value' => function ($item) {
+                    return Orders::getStatusLabelById($item->status);
+                }
+            ],
+            [
+                'header' => ModeDropdown::widget(),
+                'attribute' => 'mode',
+                'headerOptions' => ['class' => 'dropdown-th'],
+                'value' => function ($item) {
+                    return Orders::getModeLabelById($item->mode);
+                }
+            ],
+            [
+                'attribute' => 'created_at',
+                'format' => 'html',
+                'value' => fn($item) => '<span class="nowrap">' . $dateYmd(
+                        $item->created_at
+                    ) . '</span><span class="nowrap">' . $dateHis(
+                        $item->created_at
+                    ) . '</span>'
+            ]
+        ];
+
+        if ($isCsv) {
+            // Редактируем колонки для репрезентации в csv-формате.
+
+            $columns[2] = ['attribute' => 'link'];
+            $columns[4] = [
+                'attribute' => 'service_id',
+                'value' => function ($item) {
+                    return "{$item->service->name} ({$item->service->id})";
+                }
+            ];
+
+            unset($columns[6]['header']);
+            unset($columns[6]['headerOptions']);
+
+            $columns[7] = [
+                'attribute' => 'created_at',
+                'value' => fn($item) => $dateYmd(
+                        $item->created_at
+                    ) . PHP_EOL . $dateHis($item->created_at)
+            ];
+        }
+
+        return $columns;
     }
 }
