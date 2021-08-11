@@ -146,7 +146,7 @@ class OrdersSearch implements IOrdersSearch
         // Фильтрация по сервису
         if (in_array('service', $input) && !is_null(
                 $service = $this->model->attributes['service_id']
-            )) {
+            ) && $service) {
             $query->andWhere(['o.service_id' => $service]);
         }
 
