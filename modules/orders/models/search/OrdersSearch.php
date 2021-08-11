@@ -2,6 +2,8 @@
 
 namespace orders\models\search;
 
+use orders\models\Services;
+use orders\models\Users;
 use Yii;
 use Exception;
 use yii\db\Query;
@@ -48,10 +50,18 @@ class OrdersSearch implements IOrdersSearch
      */
     public function getData(): ActiveDataProvider
     {
-        $query = $this->model::find();
+        $query = (new Query())
+            ->select(['o.*', 'u.first_name', 'u.last_name', 's.name'])
+            ->from([
+                'o' => Orders::tableName(),
+                'u' => Users::tableName(),
+                's' => Services::tableName()
+            ])
+            ->andWhere('o.user_id = u.id')
+            ->andWhere('o.service_id = s.id');
 
         $query = $this->queryFilter(
-            ['mode', 'status', 'search', 'service'],
+            ['mode', 'status', 'service', 'search'],
             $query
         );
 
@@ -80,7 +90,11 @@ class OrdersSearch implements IOrdersSearch
         // Запрашиваем данные из БД.
         $byServicesQuery = (new Query())
             ->select(['service_id AS id', 'COUNT(*) AS count'])
-            ->from('orders')
+            ->from([
+                'o' => Orders::tableName(),
+                'u' => Users::tableName()
+            ])
+            ->andWhere('o.user_id = u.id')
             ->groupBy(['service_id']);
 
         $byServicesQuery = $this->queryFilter(
@@ -119,21 +133,21 @@ class OrdersSearch implements IOrdersSearch
         if (in_array('mode', $input) && !is_null(
                 $mode = $this->model->attributes['mode']
             ) && (int)$mode !== Orders::MODE_ALL) {
-            $query->andWhere(['mode' => $mode]);
+            $query->andWhere(['o.mode' => $mode]);
         }
 
         // Фильтрация по статусу
         if (in_array('status', $input) && !is_null(
                 $status = $this->model->attributes['status']
             ) && is_numeric($status)) {
-            $query->andWhere(['status' => $status]);
+            $query->andWhere(['o.status' => $status]);
         }
 
         // Фильтрация по сервису
         if (in_array('service', $input) && !is_null(
                 $service = $this->model->attributes['service_id']
             )) {
-            $query->andWhere(['service_id' => $service]);
+            $query->andWhere(['o.service_id' => $service]);
         }
 
         // Фильтрация по поиску
@@ -143,17 +157,18 @@ class OrdersSearch implements IOrdersSearch
             $search = trim($search);
             switch ($this->model->attributes['search_type']) {
                 case self::SEARCH_TYPE_ORDER_ID:
-                    $query->andWhere(['id' => $search]);
+                    $query->andWhere(['o.id' => $search]);
                     break;
                 case self::SEARCH_TYPE_LINK:
-                    $query->andWhere(['like', 'link', $search]);
+                    $query->andWhere(['like', 'o.link', $search]);
                     break;
                 case self::SEARCH_TYPE_USER_NAME:
-                    $query->leftJoin(
-                        'users',
-                        'users.id = orders.user_id'
-                    )->andWhere(
-                        ['like', "CONCAT(first_name, ' ', last_name)", $search]
+                    $query->andWhere(
+                        [
+                            'like',
+                            "CONCAT(u.first_name, ' ', u.last_name)",
+                            $search
+                        ]
                     );
                     break;
             }
@@ -193,50 +208,57 @@ class OrdersSearch implements IOrdersSearch
         $dateHis = fn($d) => date('H:i:s', $d);
 
         $columns = [
-            'id',
             [
-                'attribute' => 'user_id',
+                'label' => Yii::t('text', 'orders.grid.column.id'),
+                'attribute' => 'id'
+            ],
+            [
+                'label' => Yii::t('text', 'orders.grid.column.user'),
                 'value' => function ($item) {
-                    return "{$item->user->first_name} {$item->user->last_name}";
+                    return "{$item['first_name']} {$item['last_name']}";
                 }
             ],
             [
+                'label' => Yii::t('text', 'orders.grid.column.link'),
                 'attribute' => 'link',
                 'contentOptions' => ['class' => 'link']
             ],
-            'quantity',
             [
+                'label' => Yii::t('text', 'orders.grid.column.quantity'),
+                'attribute' => 'quantity'
+            ],
+            [
+                'label' => Yii::t('text', 'orders.grid.column.service'),
                 'header' => ServiceDropdown::widget(),
-                'attribute' => 'service_id',
                 'contentOptions' => ['class' => 'service'],
                 'headerOptions' => ['class' => 'dropdown-th'],
                 'format' => 'html',
                 'value' => function ($item) {
-                    return "<span class='label-id'>{$item->service->id}</span> 
-                        {$item->service->name}";
+                    return "<span class='label-id'>{$item['service_id']}</span> 
+                        {$item['name']}";
                 }
             ],
             [
-                'attribute' => 'status',
+                'label' => Yii::t('text', 'orders.grid.column.status'),
                 'value' => function ($item) {
-                    return Orders::getStatusLabelById($item->status);
+                    return Orders::getStatusLabelById($item['status']);
                 }
             ],
             [
+                'label' => Yii::t('text', 'orders.grid.column.created'),
                 'header' => ModeDropdown::widget(),
-                'attribute' => 'mode',
                 'headerOptions' => ['class' => 'dropdown-th'],
                 'value' => function ($item) {
-                    return Orders::getModeLabelById($item->mode);
+                    return Orders::getModeLabelById($item['mode']);
                 }
             ],
             [
-                'attribute' => 'created_at',
+                'label' => Yii::t('text', 'orders.grid.column.created'),
                 'format' => 'html',
                 'value' => fn($item) => '<span class="nowrap">' . $dateYmd(
-                        $item->created_at
+                        $item['created_at']
                     ) . '</span><span class="nowrap">' . $dateHis(
-                        $item->created_at
+                        $item['created_at']
                     ) . '</span>'
             ]
         ];
@@ -244,11 +266,14 @@ class OrdersSearch implements IOrdersSearch
         if ($isCsv) {
             // Редактируем колонки для репрезентации в csv-формате.
 
-            $columns[2] = ['attribute' => 'link'];
+            $columns[2] = [
+                'label' => Yii::t('text', 'orders.grid.column.link'),
+                'attribute' => 'link'
+            ];
             $columns[4] = [
-                'attribute' => 'service_id',
+                'label' => Yii::t('text', 'orders.grid.column.service'),
                 'value' => function ($item) {
-                    return "{$item->service->name} ({$item->service->id})";
+                    return "{$item['name']} ({$item['service_id']})";
                 }
             ];
 
@@ -256,10 +281,9 @@ class OrdersSearch implements IOrdersSearch
             unset($columns[6]['headerOptions']);
 
             $columns[7] = [
-                'attribute' => 'created_at',
-                'value' => fn($item) => $dateYmd(
-                        $item->created_at
-                    ) . PHP_EOL . $dateHis($item->created_at)
+                'label' => Yii::t('text', 'orders.grid.column.created'),
+                'value' => fn($item) => $dateYmd($item['created_at']) .
+                    PHP_EOL . $dateHis($item['created_at'])
             ];
         }
 

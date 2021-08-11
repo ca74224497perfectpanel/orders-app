@@ -176,23 +176,6 @@ class Orders extends ActiveRecord
 
     /**
      * {@inheritdoc}
-     */
-    public function attributeLabels(): array
-    {
-        return [
-            'id' => Yii::t('text', 'orders.grid.column.id'),
-            'user_id' => Yii::t('text', 'orders.grid.column.user'),
-            'link' => Yii::t('text', 'orders.grid.column.link'),
-            'quantity' => Yii::t('text', 'orders.grid.column.quantity'),
-            'service_id' => Yii::t('text', 'orders.grid.column.service'),
-            'status' => Yii::t('text', 'orders.grid.column.status'),
-            'created_at' => Yii::t('text', 'orders.grid.column.created'),
-            'mode' => Yii::t('text', 'orders.grid.column.mode'),
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
      * @return OrdersQuery the active query used by this AR class.
      */
     public static function find(): OrdersQuery
