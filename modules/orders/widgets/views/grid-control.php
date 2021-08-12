@@ -9,6 +9,8 @@
  * @var $domain string
  */
 
+use yii\helpers\Html;
+
 $searchPartUrl = empty($search) ?
     '' : "&search=$search&search_type=$srtype";
 ?>
@@ -29,7 +31,7 @@ $searchPartUrl = empty($search) ?
         <?php else: ?>
             <li>
         <?php endif; ?>
-            <a href="<?= "$domain/?status=$statusId$searchPartUrl"; ?>">
+            <a href="<?= Html::encode("$domain/?status=$statusId$searchPartUrl"); ?>">
                 <?= $statusLabel; ?>
             </a>
         </li>
@@ -42,7 +44,7 @@ $searchPartUrl = empty($search) ?
                 <input type="text"
                        name="search"
                        class="form-control"
-                       value="<?= $search; ?>"
+                       value="<?= Html::encode($search); ?>"
                        placeholder="<?= Yii::t('text', 'orders.search.placeholder'); ?>" />
                 <?php if (is_numeric($status)): ?>
                     <input type="hidden"

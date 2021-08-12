@@ -59,28 +59,6 @@ class DefaultController extends Controller
     }
 
     /**
-     * Очистка входных параметров (защита от XSS).
-     * @param Action $action
-     * @return bool
-     * @throws BadRequestHttpException
-     */
-    public function beforeAction($action): bool
-    {
-        $url = urldecode(Url::current());
-
-        $forbiddenChars = ['\'', '"', '>', '<'];
-        if ($url !== ($safeUrl = str_replace($forbiddenChars, '', $url))) {
-            $this->redirect($safeUrl);
-        }
-
-        if (!parent::beforeAction($action)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * Редирект на главную / предыдущую страницу модуля при ошибке запроса.
      * @return Response
      */
